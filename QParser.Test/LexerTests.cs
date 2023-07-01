@@ -41,13 +41,13 @@ public class LexerTestsFixtureData
                 "\n",
                 "    ",
                 "BBB",
-                "   \n",
+                "    \n",
                 " ",
                 "C",
                 "  "
             }, new []
             {
-                TokenType.Space,
+                TokenType.Indent,
                 TokenType.Identifier,
                 TokenType.Space,
                 TokenType.Indent,
@@ -100,9 +100,11 @@ public class LexerTests
         }
 
         Assert.That(_expectedTokenTypes, Has.Length.EqualTo(_tokens.Count));
+        Console.WriteLine("Tokens: ");
         for (var index = 0; index < _tokens.Count; index++)
         {
             var tkn = _tokens[index];
+            Console.WriteLine(tkn);
             Assert.Multiple(() =>
             {
                 Assert.That(_expectedTokenTypes[index], Is.EqualTo(tkn.TokenType));

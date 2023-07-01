@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using QParser.Lexer.States;
 using QParser.Lexer.Tokens;
 
@@ -44,6 +45,7 @@ public class QLexer
         _stream = new StreamReader(stream, Encoding.UTF8);
         _charPosition = new CharPosition(0, 0, filePath);
         _currentState = _rootState = new RootState(null);
+        _indentStack.Push(0);
         RegisterPlainSymbols();
     }
 
@@ -57,7 +59,7 @@ public class QLexer
 
     private void ReserveOneChar()
     {
-        Console.WriteLine($"Reserve {_lookaheadChar}");
+        Console.WriteLine($"Reserve '{Regex.Escape(_lookaheadChar.ToString())}'");
         _reserveOneChar = true;
     }
 
@@ -66,7 +68,7 @@ public class QLexer
         if (_reserveOneChar)
         {
             _reserveOneChar = false;
-            Console.WriteLine($"Release {_lookaheadChar}");
+            Console.WriteLine($"Release {Regex.Escape(_lookaheadChar.ToString())}");
             return _lookaheadChar;
         }
 
@@ -91,7 +93,6 @@ public class QLexer
         var startPos = _charPosition;
         while (!accept)
         {
-            var curPos = _charPosition;
             var c = NextChar();
             if (SpaceState.CheckAll(c))
             {
@@ -101,11 +102,19 @@ public class QLexer
                     ReserveOneChar();
                     break;
                 }
+            } else if (startPos.Column == 0 && _stringBuilder.Length == 0 && _indentStack.Peek() != 0)
+            {
+                // This is to look for dedent to 0 space.
+                // happens when at start of line with no space ahead, and the current indent level is not 0
+                ReserveOneChar();
+                _currentState = SpaceState.Identity;
+                break;
             }
+
             var transition = _currentState.NextState(c);
-            Console.WriteLine($"'{c}': {transition}");
+            Console.WriteLine($"'{Regex.Escape(c.ToString())}': {transition}");
             var consume = transition.Flag.HasFlag(StateTransitionFlag.ConsumeChar);
-            
+
             if (transition.Flag.HasFlag(StateTransitionFlag.Accept))
             {
                 accept = true;
@@ -115,7 +124,8 @@ public class QLexer
             if (transition.State != null) _currentState = transition.State;
             if (transition.Flag.HasFlag(StateTransitionFlag.Error))
             {
-                throw new FormatException($"Unrecognized token: \"{_stringBuilder}\" at {_charPosition.ToStringWithFile()}");
+                throw new FormatException(
+                    $"Unrecognized token: \"{_stringBuilder}\" at {_charPosition.ToStringWithFile()}");
             }
 
             if (consume)
@@ -133,6 +143,23 @@ public class QLexer
         token.Start = startPos;
         token.End = _charPosition;
         token.Ignore = ignore;
+        // Transform into indent or dedent for space tokens
+        if (_currentState is SpaceState { CanBeIndent: true } && token.Start.Column == 0)
+        {
+            if (token.Content.Length > _indentStack.Peek())
+            {
+                token.TokenType = TokenType.Indent;
+                token.Ignore = false;
+                _indentStack.Push(token.Content.Length);
+            }
+            else if (token.Content.Length < _indentStack.Peek())
+            {
+                token.TokenType = TokenType.Dedent;
+                token.Ignore = false;
+                _indentStack.Pop();
+            }
+        }
+
         return token;
     }
 }

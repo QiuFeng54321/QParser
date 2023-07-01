@@ -5,7 +5,8 @@ namespace QParser.Lexer.States;
 public class SpaceState : State
 {
     public static readonly SpaceState Identity = new (null);
-    public static readonly StateTransition Transition = new(Identity, StateTransitionFlag.ConsumeChar);
+    public static readonly StateTransition Transition = new(Identity, StateTransitionFlag.None);
+    public bool CanBeIndent = true;
     
     public SpaceState(State? parentState) : base(parentState)
     {
@@ -13,15 +14,16 @@ public class SpaceState : State
 
     public override StateTransition NextState(char c)
     {
+        // '      \n'
+        if (c == '\n')
+        {
+            CanBeIndent = false;
+            return new(this, StateTransitionFlag.Accept | StateTransitionFlag.ConsumeChar | StateTransitionFlag.Ignore);
+        }
         // '      '
         if (char.IsWhiteSpace(c))
         {
             return new(this, StateTransitionFlag.ConsumeChar);
-        }
-        // '      \n'
-        if (c == '\n')
-        {
-            return new(this, StateTransitionFlag.Accept | StateTransitionFlag.ConsumeChar | StateTransitionFlag.Ignore);
         }
         // '   d', don't consume d, accept and mark ignore
         return new(this, StateTransitionFlag.Accept | StateTransitionFlag.Ignore);
@@ -34,6 +36,7 @@ public class SpaceState : State
 
     public override StateTransition MakeTransitionToThis()
     {
+        CanBeIndent = true;
         return Transition;
     }
 
