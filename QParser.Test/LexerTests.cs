@@ -15,7 +15,7 @@ public class LexerTestsFixtureData
             {
                 "DECLARE",
                 "    ",
-                "OF",
+                "O__$2932F",
                 " ",
                 "AS",
                 ">=",
@@ -45,7 +45,7 @@ public class LexerTestsFixtureData
                 " ",
                 "C",
                 "  "
-            }, new []
+            }, new[]
             {
                 TokenType.Indent,
                 TokenType.Identifier,
@@ -57,6 +57,32 @@ public class LexerTestsFixtureData
                 TokenType.Identifier,
                 TokenType.Space
             });
+            yield return new TestFixtureData("Numbers", new[]
+                {
+                    "abcd123",
+                    ".567",
+                    "  ",
+                    "3412",
+                    "abc",
+                    " ",
+                    "4.23",
+                    ".",
+                    " ",
+                    "-.3"
+                },
+                new[]
+                {
+                    TokenType.Identifier,
+                    TokenType.Real,
+                    TokenType.Space,
+                    TokenType.Integer,
+                    TokenType.Identifier,
+                    TokenType.Space,
+                    TokenType.Real,
+                    TokenType.Dot,
+                    TokenType.Space,
+                    TokenType.Real
+                });
         }
     }
 }
@@ -70,7 +96,7 @@ public class LexerTests
     private readonly TokenType[] _expectedTokenTypes;
     private readonly string[] _expectedTokenContents;
     private readonly string _name;
-    
+
 
     public LexerTests(string name, string[] expectedContents, TokenType[] expectedTokenTypes)
     {

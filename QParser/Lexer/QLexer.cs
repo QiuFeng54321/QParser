@@ -38,6 +38,7 @@ public class QLexer
         ["{"] = TokenType.OpenBrace,
         ["}"] = TokenType.CloseBrace,
         ["<-"] = TokenType.Assignment,
+        ["."] = TokenType.Dot
     };
 
     public QLexer(Stream stream, string filePath)
@@ -47,6 +48,7 @@ public class QLexer
         _currentState = _rootState = new RootState(null);
         _indentStack.Push(0);
         RegisterPlainSymbols();
+        RegisterNumberStateTransition();
     }
 
     private void RegisterPlainSymbols()
@@ -54,6 +56,20 @@ public class QLexer
         foreach (var (str, tokenType) in _plainSymbols)
         {
             _rootState.RootTrieState.Add(str, tokenType);
+        }
+    }
+
+    private void RegisterNumberStateTransition()
+    {
+        foreach (var prefix in new[] { "", "+", "-", "." })
+        {
+            for (var i = 0; i < 10; i++)
+            {
+                _rootState.RootTrieState.Add(prefix + i, 
+                    prefix is not "." ? new IntegerState(null) : new RealState(null));
+            }
+
+            if (prefix is not ("" or ".")) _rootState.RootTrieState.Add(prefix + ".", new IntegerState(null));
         }
     }
 
@@ -102,7 +118,8 @@ public class QLexer
                     ReserveOneChar();
                     break;
                 }
-            } else if (startPos.Column == 0 && _stringBuilder.Length == 0 && _indentStack.Peek() != 0)
+            }
+            else if (startPos.Column == 0 && _stringBuilder.Length == 0 && _indentStack.Peek() != 0)
             {
                 // This is to look for dedent to 0 space.
                 // happens when at start of line with no space ahead, and the current indent level is not 0

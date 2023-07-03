@@ -9,6 +9,7 @@ public class RootState : State
     {
         if (c == '\0') return StateTransition.Accept;
         if (SpaceState.CheckAll(c)) return SpaceState.Identity.MakeTransitionToThis();
+        // if (IntegerState.Check(c)) return new IntegerState(this).MakeTransitionToThis();
         return RootTrieState.MakeTransitionToThis();
     }
 

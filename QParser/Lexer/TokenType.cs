@@ -5,6 +5,7 @@ public enum TokenType
     Identifier,
     Integer,
     Real,
+    Dot,
     Indent,
     Dedent,
     Declare,
