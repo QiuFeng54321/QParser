@@ -6,6 +6,8 @@ public enum TokenType
     Integer,
     Real,
     Dot,
+    Colon,
+    Comma,
     Indent,
     Dedent,
     Declare,
@@ -22,6 +24,12 @@ public enum TokenType
     GreaterThanOrEqualTo,
     Equal,
     NotEqual,
+    Plus,
+    Minus,
+    Multiply,
+    Divide,
+    IntDivide,
+    Power,
     OpenParen,
     CloseParen,
     OpenBracket,
@@ -31,4 +39,5 @@ public enum TokenType
     Eof,
     Space,
     Unknown
+    
 }

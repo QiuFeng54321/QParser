@@ -1,4 +1,4 @@
-namespace QParser.Lexer;
+namespace QParser;
 
 public struct CharPosition
 {

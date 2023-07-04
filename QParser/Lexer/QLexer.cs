@@ -31,6 +31,12 @@ public class QLexer
         ["<="] = TokenType.LessThanOrEqualTo,
         ["="] = TokenType.Equal,
         ["<>"] = TokenType.NotEqual,
+        ["+"] = TokenType.Plus,
+        ["-"] = TokenType.Minus,
+        ["*"] = TokenType.Multiply,
+        ["/"] = TokenType.Divide,
+        ["DIV"] = TokenType.IntDivide,
+        ["^"] = TokenType.Power,
         ["("] = TokenType.OpenParen,
         [")"] = TokenType.CloseParen,
         ["["] = TokenType.OpenBracket,
@@ -38,7 +44,9 @@ public class QLexer
         ["{"] = TokenType.OpenBrace,
         ["}"] = TokenType.CloseBrace,
         ["<-"] = TokenType.Assignment,
-        ["."] = TokenType.Dot
+        ["."] = TokenType.Dot,
+        [":"] = TokenType.Colon,
+        [","] = TokenType.Comma
     };
 
     public QLexer(Stream stream, string filePath)
