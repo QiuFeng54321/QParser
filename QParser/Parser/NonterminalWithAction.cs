@@ -20,16 +20,19 @@ public class NonterminalWithAction : Nonterminal
         return new NonterminalWithAction(nonterminal, nonterminal.Actions.Append(action));
     }
 
-    protected override void InternalGenerateFirst()
+    protected internal override void InternalGenerateFirstGenerator()
     {
-        InternalNonterminal.GenerateFirst();
-        foreach (var tokenType in InternalNonterminal.First)
-        {
-            First.Add(tokenType);
-        }
+        InternalNonterminal.InternalGenerateFirstGenerator();
+        FirstGenerator.Add(InternalNonterminal);
     }
 
-    public override bool CanBeEmpty => InternalNonterminal.CanBeEmpty;
+    internal override void InternalGenerateCanBeEmpty()
+    {
+        InternalNonterminal.GenerateCanBeEmpty();
+        CanBeEmpty = InternalNonterminal.CanBeEmpty;
+        CanBeEmptyGenerated = InternalNonterminal.CanBeEmptyGenerated;
+    }
+
     public override string ToString() => $"{InternalNonterminal} [#{Actions.Length}]";
 
 }

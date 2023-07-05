@@ -17,20 +17,27 @@ public class CompositeNonterminal : Nonterminal
         return new CompositeNonterminal(subRule1.Grammar, subRule1.Components.Concat(subRule2.Components));
     }
 
-    protected override void InternalGenerateFirst()
+    protected internal override void InternalGenerateFirstGenerator()
     {
         foreach (var component in Components)
         {
-            component.GenerateFirst();
-            First.UnionWith(component.First);
+            FirstGenerator.Add(component);
             if (!component.CanBeEmpty) return;
-            First.Remove(TokenType.Epsilon);
         }
 
         First.Add(TokenType.Epsilon);
     }
 
-    public override bool CanBeEmpty => Components.All(component => component.CanBeEmpty);
+    internal override void InternalGenerateCanBeEmpty()
+    {
+        if (Components.Any(component => !component.CanBeEmpty))
+        {
+            CanBeEmpty = false;
+            return;
+        }
+
+        CanBeEmpty = true;
+    }
 
     public override string ToString()
     {

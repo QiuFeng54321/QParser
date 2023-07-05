@@ -16,12 +16,37 @@ public class Grammar
         Epsilon = new(this, TokenType.Epsilon);
     }
 
+    public void GenerateCanBeEmpty()
+    {
+        var changed = true;
+        while (changed)
+        {
+            changed = false;
+            foreach (var rule in Rules)
+            {
+                changed |= rule.GenerateCanBeEmpty();
+            }
+        }
+    }
     public void GenerateFirst()
     {
         if (FirstGenerated) return;
+        var changed = true;
         foreach (var rule in Rules)
         {
-            rule.GenerateFirst();
+            rule.GenerateFirstGenerator();
+        }
+        while (changed)
+        {
+            changed = false;
+            foreach (var rule in Rules)
+            {
+                foreach (var subRule in rule.FirstGenerator)
+                {
+                    changed |= subRule.RoundGenerateFirst();
+                }
+                changed |= rule.RoundGenerateFirst();
+            }
         }
 
         FirstGenerated = true;

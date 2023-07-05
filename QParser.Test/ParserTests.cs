@@ -14,6 +14,7 @@ public class ParserTestsFixtureData
         {
             yield return new TestFixtureData(new TestParser1GrammarConstructor());
             yield return new TestFixtureData(new TestParser2GrammarConstructor());
+            yield return new TestFixtureData(new TestParser3RecursiveGrammarConstructor());
         }
     }
 }
@@ -32,6 +33,7 @@ public class ParserTests
     public void Setup()
     {
         _grammarConstructor.Construct();
+        _grammarConstructor.Grammar.GenerateCanBeEmpty();
     }
 
     [Test]

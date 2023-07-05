@@ -11,13 +11,16 @@ public class TokenTerminal : Nonterminal
     {
         TokenType = tokenType;
         Name = TokenType is TokenType.Epsilon ? "ϵ" : TokenType.ToString();
-    }
-
-    protected override void InternalGenerateFirst()
-    {
-        // if (TokenType is not TokenType.Epsilon) 
         First.Add(TokenType);
+        CanBeEmpty = TokenType is TokenType.Epsilon;
+        CanBeEmptyGenerated = true;
     }
 
-    public override bool CanBeEmpty => TokenType is TokenType.Epsilon;
+    protected internal override void InternalGenerateFirstGenerator()
+    {
+    }
+
+    internal override void InternalGenerateCanBeEmpty()
+    {
+    }
 }

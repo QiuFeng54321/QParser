@@ -9,23 +9,40 @@ public abstract class Nonterminal
     public readonly Grammar Grammar;
     public readonly HashSet<TokenType> First = new();
     public readonly HashSet<TokenType> Follow = new();
-    private bool _firstGenerated;
-    private bool _firstGenerating;
-    protected bool FollowGenerated;
+    public readonly HashSet<Nonterminal> FirstGenerator = new();
+    protected bool FirstGeneratorGenerated;
+    public bool CanBeEmpty;
+    public bool CanBeEmptyGenerated;
 
-    protected abstract void InternalGenerateFirst();
+    protected internal abstract void InternalGenerateFirstGenerator();
 
-    public void GenerateFirst()
+    public void GenerateFirstGenerator()
     {
-        if (_firstGenerated) return;
-        if (_firstGenerating) throw new FormatException($"Left recursive rule: {this}");
-        _firstGenerating = true;
-        InternalGenerateFirst();
-        _firstGenerated = true;
-        _firstGenerating = false;
+        if (FirstGeneratorGenerated) return;
+        InternalGenerateFirstGenerator();
+        FirstGeneratorGenerated = true;
     }
-    
-    public abstract bool CanBeEmpty { get; }
+
+    public bool RoundGenerateFirst()
+    {
+        var changed = false;
+        foreach (var nonterminal in FirstGenerator)
+        {
+            changed |= First.UnionAndCheckChange(nonterminal.First);
+        }
+
+        return changed;
+    }
+
+    internal abstract void InternalGenerateCanBeEmpty();
+
+    public bool GenerateCanBeEmpty()
+    {
+        if (CanBeEmptyGenerated) return false;
+        var prev = CanBeEmpty;
+        InternalGenerateCanBeEmpty();
+        return prev != CanBeEmpty;
+    }
 
     protected Nonterminal(Grammar grammar)
     {

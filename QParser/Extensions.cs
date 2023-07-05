@@ -10,5 +10,12 @@ public static class Extensions
     {
         return new NonterminalWithAction(nonterminal, action);
     }
+
+    public static bool UnionAndCheckChange<T>(this HashSet<T> hashSet, HashSet<T> hashSet2)
+    {
+        var lengthBefore = hashSet.Count;
+        hashSet.UnionWith(hashSet2);
+        return lengthBefore != hashSet.Count;
+    }
     
 }
