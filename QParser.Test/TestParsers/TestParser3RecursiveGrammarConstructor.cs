@@ -8,8 +8,11 @@ public class TestParser3RecursiveGrammarConstructor : GrammarConstructor
     /// <summary>
     /// S -> A
     /// A -> A B
+    /// A -> B A
     /// A -> id
     /// B -> C A
+    /// B -> C
+    /// B -> int
     /// C -> B C
     /// C -> eps
     /// </summary>
@@ -21,8 +24,11 @@ public class TestParser3RecursiveGrammarConstructor : GrammarConstructor
         var c = R("C");
         program.Add(a);
         a.Add(C(a, b))
+            .Add(C(b, a))
             .Add(T(TokenType.Identifier));
-        b.Add(C(c, a));
+        b.Add(C(c, a))
+            .Add(c)
+            .Add(T(TokenType.Integer));
         c.Add(C(b, c))
             .Add(Epsilon);
     }

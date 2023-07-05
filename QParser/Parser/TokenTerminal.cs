@@ -20,7 +20,7 @@ public class TokenTerminal : Nonterminal
     {
     }
 
-    internal override void InternalGenerateCanBeEmpty()
+    protected override void InternalGenerateCanBeEmpty()
     {
     }
 }

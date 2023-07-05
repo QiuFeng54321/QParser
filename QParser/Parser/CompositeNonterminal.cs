@@ -28,15 +28,21 @@ public class CompositeNonterminal : Nonterminal
         First.Add(TokenType.Epsilon);
     }
 
-    internal override void InternalGenerateCanBeEmpty()
+    protected override void InternalGenerateCanBeEmpty()
     {
-        if (Components.Any(component => !component.CanBeEmpty))
+        foreach (var component in Components)
         {
+            if (component.CanBeEmpty) continue;
             CanBeEmpty = false;
+            // One component is definitely not empty => This cannot be empty
+            CanBeEmptyGenerated = component.CanBeEmptyGenerated;
             return;
         }
 
-        CanBeEmpty = true;
+        // All components may be empty
+        // CanBeEmpty is set true if a token is epsilon.
+        // This spreads like wildfire and is certain to be definitely generated.
+        CanBeEmpty = CanBeEmptyGenerated = true;
     }
 
     public override string ToString()

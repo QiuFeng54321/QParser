@@ -34,7 +34,7 @@ public abstract class Nonterminal
         return changed;
     }
 
-    internal abstract void InternalGenerateCanBeEmpty();
+    protected abstract void InternalGenerateCanBeEmpty();
 
     public bool GenerateCanBeEmpty()
     {

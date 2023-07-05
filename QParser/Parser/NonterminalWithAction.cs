@@ -26,7 +26,7 @@ public class NonterminalWithAction : Nonterminal
         FirstGenerator.Add(InternalNonterminal);
     }
 
-    internal override void InternalGenerateCanBeEmpty()
+    protected override void InternalGenerateCanBeEmpty()
     {
         InternalNonterminal.GenerateCanBeEmpty();
         CanBeEmpty = InternalNonterminal.CanBeEmpty;

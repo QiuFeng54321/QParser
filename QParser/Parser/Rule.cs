@@ -22,7 +22,7 @@ public class Rule : Nonterminal
         }
     }
 
-    internal override void InternalGenerateCanBeEmpty()
+    protected override void InternalGenerateCanBeEmpty()
     {
         if (CanBeEmptyGenerated) return;
         if (_subRules.Contains(Grammar.Epsilon))
@@ -35,7 +35,13 @@ public class Rule : Nonterminal
         {
             subRule.GenerateCanBeEmpty();
         }
-        CanBeEmpty = _subRules.Any(r => r.CanBeEmpty);
+        foreach (var r in _subRules)
+        {
+            if (!r.CanBeEmpty) continue;
+            // A sub-rule is certain to allow empty 
+            CanBeEmpty = CanBeEmptyGenerated = true;
+            break;
+        }
     }
 
     public bool IsRedundant => _subRules.Count == 1;
@@ -55,7 +61,13 @@ public class Rule : Nonterminal
     public void Format(StringBuilder sb, bool withFirst = false)
     {
         sb.AppendLine();
-        sb.Append($"Rule {Name}: ");
+        sb.Append($"Rule {Name}");
+        if (CanBeEmpty)
+        {
+            sb.Append(" (Can be empty)");
+        }
+
+        sb.Append(": ");
         if (withFirst)
         {
             sb.Append($" FIRST = {{{string.Join(", ", First)}}}");
@@ -68,6 +80,10 @@ public class Rule : Nonterminal
             if (withFirst)
             {
                 sb.Append($" FIRST = {{{string.Join(", ", subRule.First)}}}");
+            }
+            if (subRule.CanBeEmpty)
+            {
+                sb.Append(" (Can be empty)");
             }
 
             sb.AppendLine();
