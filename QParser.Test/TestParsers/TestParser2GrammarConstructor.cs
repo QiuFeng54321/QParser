@@ -27,10 +27,10 @@ public class TestParser2GrammarConstructor : GrammarConstructor
         program.Add(add);
         add.Add(C(mult, add2));
         add2.Add(C(T(TokenType.Plus), mult, add2))
-            .AddEpsilon();
+            .Add(Epsilon);
         mult.Add(C(e, mult2));
         mult2.Add(C(T(TokenType.Multiply), e, mult2))
-            .AddEpsilon();
+            .Add(Epsilon);
         e.Add(C(T(TokenType.OpenParen), add, T(TokenType.CloseParen)))
             .Add(T(TokenType.Integer))
             .Add(T(TokenType.Real));

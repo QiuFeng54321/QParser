@@ -2,38 +2,44 @@ using System.Text;
 
 namespace QParser.Parser;
 
-public class Rule : SubRule
+public class Rule : Nonterminal
 {
-    public List<SubRule> SubRules;
-    public bool CanBeEmpty { get; set; }
-
-    public Rule(Grammar grammar, string name, List<SubRule> subRules) : base(grammar)
+    private readonly HashSet<Nonterminal> _subRules;
+    protected override void InternalGenerateFirst()
     {
-        SubRules = subRules;
+        foreach (var subRule in _subRules)
+        {
+            subRule.GenerateFirst();
+            First.UnionWith(subRule.First);
+        }
+    }
+
+    public override bool CanBeEmpty => _subRules.Any(r => r.CanBeEmpty);
+    public bool IsRedundant => _subRules.Count == 1;
+
+    public Rule(Grammar grammar, string name, HashSet<Nonterminal> subRules) : base(grammar)
+    {
+        _subRules = subRules;
         Name = name;
     }
-
-    public Rule AddEpsilon()
+    public Rule Add(Nonterminal nonterminal)
     {
-        CanBeEmpty = true;
+        _subRules.Add(nonterminal);
         return this;
     }
-    public Rule Add(SubRule subRule)
-    {
-        SubRules.Add(subRule);
-        return this;
-    }
+    
 
-    public void Format(StringBuilder sb)
+    public void Format(StringBuilder sb, bool withFirst = false)
     {
-        foreach (var subRule in SubRules)
+        foreach (var subRule in _subRules)
         {
-            sb.AppendLine($"{Name} -> {subRule}");
-        }
+            sb.Append($"{Name} -> {subRule}");
+            if (withFirst)
+            {
+                sb.Append($" {{{string.Join(", ", subRule.First)}}}");
+            }
 
-        if (CanBeEmpty)
-        {
-            sb.AppendLine($"{Name} -> ϵ");
+            sb.AppendLine();
         }
     }
 }

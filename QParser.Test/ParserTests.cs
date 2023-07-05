@@ -35,8 +35,15 @@ public class ParserTests
     }
 
     [Test]
-    public void Test()
+    public void OutputGrammar()
     {
-        Console.WriteLine(_grammarConstructor.Grammar.ToString());
+        Console.WriteLine(_grammarConstructor.Grammar);
+    }
+
+    [Test]
+    public void GenerateFirst()
+    {
+        _grammarConstructor.Grammar.GenerateFirst();
+        Console.WriteLine(_grammarConstructor.Grammar);
     }
 }

@@ -38,6 +38,7 @@ public enum TokenType
     CloseBrace,
     Eof,
     Space,
-    Unknown
+    Unknown,
+    Epsilon
     
 }

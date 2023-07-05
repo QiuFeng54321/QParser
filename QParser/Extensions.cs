@@ -6,8 +6,9 @@ namespace QParser;
 public static class Extensions
 {
     
-    public static SubRuleWithAction A(this SubRule subRule, Action<SubRule> action)
+    public static NonterminalWithAction A(this Nonterminal nonterminal, Action<Nonterminal> action)
     {
-        return new SubRuleWithAction(subRule, action);
+        return new NonterminalWithAction(nonterminal, action);
     }
+    
 }
