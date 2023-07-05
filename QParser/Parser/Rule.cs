@@ -4,11 +4,11 @@ namespace QParser.Parser;
 
 public class Rule : Nonterminal
 {
-    private readonly HashSet<Nonterminal> _subRules;
+    public readonly HashSet<Nonterminal> SubRules;
 
     protected internal override void InternalGenerateFirstGenerator()
     {
-        foreach (var subRule in _subRules)
+        foreach (var subRule in SubRules)
         {
             subRule.GenerateFirstGenerator();
             if (subRule is TokenTerminal)
@@ -25,17 +25,17 @@ public class Rule : Nonterminal
     protected override void InternalGenerateCanBeEmpty()
     {
         if (CanBeEmptyGenerated) return;
-        if (_subRules.Contains(Grammar.Epsilon))
+        if (SubRules.Contains(Grammar.Epsilon))
         {
             CanBeEmpty = CanBeEmptyGenerated = true;
             return;
         }
 
-        foreach (var subRule in _subRules)
+        foreach (var subRule in SubRules)
         {
             subRule.GenerateCanBeEmpty();
         }
-        foreach (var r in _subRules)
+        foreach (var r in SubRules)
         {
             if (!r.CanBeEmpty) continue;
             // A sub-rule is certain to allow empty 
@@ -44,21 +44,21 @@ public class Rule : Nonterminal
         }
     }
 
-    public bool IsRedundant => _subRules.Count == 1;
+    public bool IsRedundant => SubRules.Count == 1;
 
     public Rule(Grammar grammar, string name, HashSet<Nonterminal> subRules) : base(grammar)
     {
-        _subRules = subRules;
+        SubRules = subRules;
         Name = name;
     }
     public Rule Add(Nonterminal nonterminal)
     {
-        _subRules.Add(nonterminal);
+        SubRules.Add(nonterminal);
         return this;
     }
     
 
-    public void Format(StringBuilder sb, bool withFirst = false)
+    public void Format(StringBuilder sb, bool withFirst, bool withFollow)
     {
         sb.AppendLine();
         sb.Append($"Rule {Name}");
@@ -68,25 +68,31 @@ public class Rule : Nonterminal
         }
 
         sb.Append(": ");
-        if (withFirst)
-        {
-            sb.Append($" FIRST = {{{string.Join(", ", First)}}}");
-        }
+        AppendFirstFollow(sb, this, withFirst, withFollow);
 
         sb.AppendLine();
-        foreach (var subRule in _subRules)
+        foreach (var subRule in SubRules)
         {
             sb.Append($"{Name} -> {subRule};");
-            if (withFirst)
-            {
-                sb.Append($" FIRST = {{{string.Join(", ", subRule.First)}}}");
-            }
+            AppendFirstFollow(sb, subRule, withFirst, withFollow);
             if (subRule.CanBeEmpty)
             {
                 sb.Append(" (Can be empty)");
             }
 
             sb.AppendLine();
+        }
+    }
+
+    private void AppendFirstFollow(StringBuilder sb, Nonterminal rule, bool withFirst, bool withFollow)
+    {
+        if (withFirst)
+        {
+            sb.Append($" FIRST = {{{string.Join(", ", rule.First)}}}");
+        }
+        if (withFollow)
+        {
+            sb.Append($" FOLLOW = {{{string.Join(", ", rule.Follow)}}}");
         }
     }
 }

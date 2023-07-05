@@ -10,6 +10,10 @@ public class CompositeNonterminal : Nonterminal
 
     public CompositeNonterminal(Grammar grammar, params Nonterminal[] components) : base(grammar)
     {
+        if (components.Length == 0)
+        {
+            throw new InvalidOperationException("Redundant composite rule. For epsilon, use rule.Add(Epsilon)");
+        }
         Components = components;
     }
     public static CompositeNonterminal operator +(CompositeNonterminal subRule1, CompositeNonterminal subRule2)

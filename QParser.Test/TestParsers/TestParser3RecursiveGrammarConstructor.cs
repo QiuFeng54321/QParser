@@ -18,7 +18,7 @@ public class TestParser3RecursiveGrammarConstructor : GrammarConstructor
     /// </summary>
     public override void Construct()
     {
-        var program = R("Program");
+        var program = Entry(R("Program"));
         var a = R("A");
         var b = R("B");
         var c = R("C");

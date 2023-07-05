@@ -10,6 +10,7 @@ public class TestParser1GrammarConstructor : GrammarConstructor
         var decl = R( "Declare Statement",
             C(T(TokenType.Declare), T(TokenType.Identifier), T(TokenType.Colon), T(TokenType.Identifier))
             );
-       
+        Entry(decl);
+
     }
 }

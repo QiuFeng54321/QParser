@@ -11,6 +11,7 @@ public class TokenTerminal : Nonterminal
     {
         TokenType = tokenType;
         Name = TokenType is TokenType.Epsilon ? "ϵ" : TokenType.ToString();
+        // FIRST and CanBeEmpty can always be directly deduced independently
         First.Add(TokenType);
         CanBeEmpty = TokenType is TokenType.Epsilon;
         CanBeEmptyGenerated = true;

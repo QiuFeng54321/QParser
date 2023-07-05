@@ -15,5 +15,6 @@ public abstract class GrammarConstructor
         return rule;
     }
 
+    public Rule Entry(Rule rule) => Grammar.EntryRule = rule;
     public TokenTerminal Epsilon => Grammar.Epsilon;
 }

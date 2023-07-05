@@ -39,13 +39,19 @@ public class ParserTests
     [Test]
     public void OutputGrammar()
     {
+        Console.WriteLine("Original ------------------------------");
         Console.WriteLine(_grammarConstructor.Grammar);
     }
 
     [Test]
-    public void GenerateFirst()
+    public void GenerateFirstAndFollow()
     {
+        Console.WriteLine("First ------------------------------");
         _grammarConstructor.Grammar.GenerateFirst();
-        Console.WriteLine(_grammarConstructor.Grammar);
+        Console.WriteLine(_grammarConstructor.Grammar.ToString(true, false));
+        
+        Console.WriteLine("Follow ------------------------------");
+        _grammarConstructor.Grammar.GenerateFollow();
+        Console.WriteLine(_grammarConstructor.Grammar.ToString(false, true));
     }
 }

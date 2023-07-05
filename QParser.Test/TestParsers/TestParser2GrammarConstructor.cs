@@ -18,7 +18,7 @@ public class TestParser2GrammarConstructor : GrammarConstructor
     /// </summary>
     public override void Construct()
     {
-        var program = R("Program");
+        var program = Entry(R("Program"));
         var mult = R("Mult");
         var mult2 = R("Mult2");
         var add = R("Addition");
