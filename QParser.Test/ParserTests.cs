@@ -15,6 +15,9 @@ public class ParserTestsFixtureData
             yield return new TestFixtureData(new TestParser1GrammarConstructor());
             yield return new TestFixtureData(new TestParser2GrammarConstructor());
             yield return new TestFixtureData(new TestParser3RecursiveGrammarConstructor());
+            yield return new TestFixtureData(new DragonBook4_2_1GrammarConstructor());
+            yield return new TestFixtureData(new DragonBook4_2_2eGrammarConstructor());
+            yield return new TestFixtureData(new DragonBook4_2_2fGrammarConstructor());
         }
     }
 }

@@ -58,42 +58,46 @@ public class Grammar
 
     public void GenerateFollowGenerator()
     {
+        // Traverse every sub-rule
         foreach (var rule in Rules)
         {
             foreach (var subRule in rule.SubRules)
             {
                 switch (subRule)
                 {
-                    case TokenTerminal:
-                        continue;
-                    case CompositeNonterminal { Components.Length: 1 } compositeNonterminal:
-                        compositeNonterminal.FollowGenerator.Add(rule);
+                    case TokenTerminal: // Skip tokens
                         continue;
                     case CompositeNonterminal compositeNonterminal:
                     {
-                        for (var i = 1; i < compositeNonterminal.Components.Length; i++)
+                        // Iterate backwards so that FIRST set can be generated more efficiently
+                        HashSet<TokenType> first = new();
+                        for (var i = compositeNonterminal.Components.Length - 1; i >= 1; i--)
                         {
-                            HashSet<TokenType> first = new();
-                            for (var j = i; j < compositeNonterminal.Components.Length; j++)
+                            // Only keep the FIRST set from the left to the first non-epsilon-deriving component
+                            if (!compositeNonterminal.Components[i].CanBeEmpty)
                             {
-                                first.UnionWith(compositeNonterminal.Components[j].First);
-                                if (!compositeNonterminal.Components[j].CanBeEmpty) break;
+                                first.Clear();
                             }
 
+                            first.UnionWith(compositeNonterminal.Components[i].First);
+
+                            var previousComponent = compositeNonterminal.Components[i - 1];
+                            // Do not add epsilon if FIRST doesn't include one
+                            // A -> aBb: FOLLOW(B) += FIRST(b) except epsilon
+                            var followShouldHaveEpsilon = previousComponent.Follow
+                                .Contains(TokenType.Epsilon);
+                            previousComponent.Follow.UnionWith(first);
+                            if (!followShouldHaveEpsilon)
+                                previousComponent.Follow.Remove(TokenType.Epsilon);
+                            // A -> aBb, b =*> epsilon: FOLLOW(B) += FOLLOW(A)
                             if (first.Contains(TokenType.Epsilon))
                             {
-                                compositeNonterminal.Components[i - 1].FollowGenerator.Add(rule);
-                            }
-                            else
-                            {
-                                compositeNonterminal.Components[i - 1].Follow.UnionWith(first);
-                            }
-
-                            if (i == compositeNonterminal.Components.Length - 1)
-                            {
-                                compositeNonterminal.Components[i].FollowGenerator.Add(rule);
+                                previousComponent.FollowGenerator.Add(rule);
                             }
                         }
+
+                        // A -> aB: FOLLOW(B) += FOLLOW(A)
+                        compositeNonterminal.Components[^1].FollowGenerator.Add(rule);
 
                         break;
                     }
