@@ -6,7 +6,15 @@ public class CompositeNonterminal : Nonterminal
 {
     public readonly Nonterminal[] Components;
 
+    
+    /// <summary>
+    /// This composite non-terminal contains only one token
+    /// </summary>
+    
     public bool IsSingleToken => Components is [TokenTerminal];
+    /// <summary>
+    /// This composite non-terminal contains only one rule
+    /// </summary>
     public bool IsSingleRule => Components is [Rule];
 
     public CompositeNonterminal(Grammar grammar, IEnumerable<Nonterminal> components) : this(grammar, components.ToArray()) {}

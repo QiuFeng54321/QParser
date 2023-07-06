@@ -37,6 +37,10 @@ public class Rule : Nonterminal
         }
     }
 
+    /// <summary>
+    /// A rule is redundant <em>iff</em> it contains only a single sub-rule, and the sub-rule contains a single rule
+    /// In this case, the rule is equivalent to the rule contained in the only sub-rule
+    /// </summary>
     public bool IsRedundant => SubRules.Count == 1 && SubRules.First().IsSingleRule;
 
     public Rule(Grammar grammar, string name, HashSet<CompositeNonterminal> subRules) : base(grammar)
@@ -60,11 +64,6 @@ public class Rule : Nonterminal
     {
         sb.AppendLine();
         sb.Append($"Rule {Name}");
-        if (CanBeEmpty)
-        {
-            sb.Append(" (Can be empty)");
-        }
-
         sb.Append(':');
         AppendFirstFollow(sb, this, withFirst, withFollow);
 
@@ -74,17 +73,16 @@ public class Rule : Nonterminal
             sb.Append($"{Name} -> {subRule};");
             // FOLLOW is not calculated for sub-rules
             AppendFirstFollow(sb, subRule, withFirst, false);
-            if (subRule.CanBeEmpty)
-            {
-                sb.Append(" (Can be empty)");
-            }
-
             sb.AppendLine();
         }
     }
 
     private void AppendFirstFollow(StringBuilder sb, Nonterminal rule, bool withFirst, bool withFollow)
     {
+        if (rule.CanBeEmpty)
+        {
+            sb.Append(" (Can be empty)");
+        }
         if (withFirst)
         {
             sb.Append($" FIRST = {{{string.Join(", ", rule.First)}}}");
