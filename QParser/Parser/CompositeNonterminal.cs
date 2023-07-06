@@ -6,6 +6,9 @@ public class CompositeNonterminal : Nonterminal
 {
     public readonly Nonterminal[] Components;
 
+    public bool IsSingleToken => Components is [TokenTerminal];
+    public bool IsSingleRule => Components is [Rule];
+
     public CompositeNonterminal(Grammar grammar, IEnumerable<Nonterminal> components) : this(grammar, components.ToArray()) {}
 
     public CompositeNonterminal(Grammar grammar, params Nonterminal[] components) : base(grammar)

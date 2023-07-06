@@ -11,9 +11,9 @@ public class Rule : Nonterminal
         foreach (var subRule in SubRules)
         {
             subRule.GenerateFirstGenerator();
-            if (subRule is TokenTerminal)
+            if (subRule.IsSingleToken)
             {
-                First.UnionWith(subRule.First);
+                First.UnionWith(subRule.Components[0].First);
             }
             else
             {
@@ -24,13 +24,6 @@ public class Rule : Nonterminal
 
     protected override void InternalGenerateCanBeEmpty()
     {
-        if (CanBeEmptyGenerated) return;
-        if (SubRules.Contains(Grammar.Epsilon))
-        {
-            CanBeEmpty = CanBeEmptyGenerated = true;
-            return;
-        }
-
         foreach (var subRule in SubRules)
         {
             subRule.GenerateCanBeEmpty();
@@ -44,7 +37,7 @@ public class Rule : Nonterminal
         }
     }
 
-    public bool IsRedundant => SubRules.Count == 1;
+    public bool IsRedundant => SubRules.Count == 1 && SubRules.First().IsSingleRule;
 
     public Rule(Grammar grammar, string name, HashSet<CompositeNonterminal> subRules) : base(grammar)
     {
@@ -72,14 +65,15 @@ public class Rule : Nonterminal
             sb.Append(" (Can be empty)");
         }
 
-        sb.Append(": ");
+        sb.Append(':');
         AppendFirstFollow(sb, this, withFirst, withFollow);
 
         sb.AppendLine();
         foreach (var subRule in SubRules)
         {
             sb.Append($"{Name} -> {subRule};");
-            AppendFirstFollow(sb, subRule, withFirst, withFollow);
+            // FOLLOW is not calculated for sub-rules
+            AppendFirstFollow(sb, subRule, withFirst, false);
             if (subRule.CanBeEmpty)
             {
                 sb.Append(" (Can be empty)");
