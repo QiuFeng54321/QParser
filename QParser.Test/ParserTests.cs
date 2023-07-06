@@ -56,5 +56,8 @@ public class ParserTests
         Console.WriteLine("Follow ------------------------------");
         _grammarConstructor.Grammar.GenerateFollow();
         Console.WriteLine(_grammarConstructor.Grammar.ToString(false, true));
+
+        var canBeLL1 = _grammarConstructor.Grammar.CanBeLL1();
+        Console.WriteLine($"Can be LL(1): {canBeLL1}");
     }
 }

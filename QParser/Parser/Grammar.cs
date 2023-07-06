@@ -1,4 +1,5 @@
 using System.Text;
+using FluentResults;
 using QParser.Lexer;
 
 namespace QParser.Parser;
@@ -117,6 +118,51 @@ public class Grammar
         }
 
         FollowGenerated = true;
+    }
+
+    public Result CanBeLL1()
+    {
+        foreach (var rule in Rules)
+        {
+            if (rule.SubRules.Count == 0) return Result.Fail($"Empty rule: {rule}"); // ???
+            HashSet<TokenType> overlappingFirst = new();
+            var firstIteration = true;
+            var hasEmpty = false;
+            CompositeNonterminal? overlappingSubRule = null;
+            foreach (var subRule in rule.SubRules)
+            {
+                if (firstIteration)
+                {
+                    overlappingFirst.UnionWith(subRule.First);
+                    firstIteration = false;
+                }
+                else
+                {
+                    overlappingFirst.IntersectWith(subRule.First);
+                }
+
+                if (subRule.CanBeEmpty)
+                {
+                    if (hasEmpty) return Result.Fail($"More than one production can produce epsilon in {rule}");
+                    hasEmpty = true;
+                }
+                else
+                {
+                    if (subRule.First.Intersect(rule.Follow).Any())
+                    {
+                        overlappingSubRule = subRule;
+                    }
+                }
+            }
+
+            if (hasEmpty && overlappingSubRule != null)
+                return Result.Fail(
+                    $"FIRST({overlappingSubRule}) = {{{string.Join(", ", overlappingSubRule.First)}}} overlaps FOLLOW({rule}) = {{{string.Join(", ", rule.Follow)}}}");
+            if (overlappingFirst.Count != 0 && rule.SubRules.Count != 1)
+                return Result.Fail($"Overlapping FIRST set in {rule}");
+        }
+
+        return Result.Ok();
     }
 
     public override string ToString()
