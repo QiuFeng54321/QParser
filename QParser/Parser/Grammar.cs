@@ -7,14 +7,14 @@ public class Grammar
 {
     public readonly HashSet<Rule> Rules = new();
     public void AddRule(Rule rule) => Rules.Add(rule);
-    public readonly TokenTerminal Epsilon;
+    public readonly CompositeNonterminal Epsilon;
     public Rule? EntryRule { set; get; }
     public bool FirstGenerated;
     public bool FollowGenerated;
 
     public Grammar()
     {
-        Epsilon = new(this, TokenType.Epsilon);
+        Epsilon = new(this, new TokenTerminal(this, TokenType.Epsilon));
     }
 
     public void GenerateCanBeEmpty()
@@ -63,49 +63,35 @@ public class Grammar
         {
             foreach (var subRule in rule.SubRules)
             {
-                switch (subRule)
+                // Iterate backwards so that FIRST set can be generated more efficiently
+                HashSet<TokenType> first = new();
+                for (var i = subRule.Components.Length - 1; i >= 1; i--)
                 {
-                    case TokenTerminal: // Skip tokens
-                        continue;
-                    case CompositeNonterminal compositeNonterminal:
+                    // Only keep the FIRST set from the left to the first non-epsilon-deriving component
+                    if (!subRule.Components[i].CanBeEmpty)
                     {
-                        // Iterate backwards so that FIRST set can be generated more efficiently
-                        HashSet<TokenType> first = new();
-                        for (var i = compositeNonterminal.Components.Length - 1; i >= 1; i--)
-                        {
-                            // Only keep the FIRST set from the left to the first non-epsilon-deriving component
-                            if (!compositeNonterminal.Components[i].CanBeEmpty)
-                            {
-                                first.Clear();
-                            }
-
-                            first.UnionWith(compositeNonterminal.Components[i].First);
-
-                            var previousComponent = compositeNonterminal.Components[i - 1];
-                            // Do not add epsilon if FIRST doesn't include one
-                            // A -> aBb: FOLLOW(B) += FIRST(b) except epsilon
-                            var followShouldHaveEpsilon = previousComponent.Follow
-                                .Contains(TokenType.Epsilon);
-                            previousComponent.Follow.UnionWith(first);
-                            if (!followShouldHaveEpsilon)
-                                previousComponent.Follow.Remove(TokenType.Epsilon);
-                            // A -> aBb, b =*> epsilon: FOLLOW(B) += FOLLOW(A)
-                            if (first.Contains(TokenType.Epsilon))
-                            {
-                                previousComponent.FollowGenerator.Add(rule);
-                            }
-                        }
-
-                        // A -> aB: FOLLOW(B) += FOLLOW(A)
-                        compositeNonterminal.Components[^1].FollowGenerator.Add(rule);
-
-                        break;
+                        first.Clear();
                     }
-                    case Rule singleRule:
-                        // A -> B: FOLLOW(B) += FOLLOW(A)
-                        singleRule.FollowGenerator.Add(rule);
-                        break;
+
+                    first.UnionWith(subRule.Components[i].First);
+
+                    var previousComponent = subRule.Components[i - 1];
+                    // Do not add epsilon if FIRST doesn't include one
+                    // A -> aBb: FOLLOW(B) += FIRST(b) except epsilon
+                    var followShouldHaveEpsilon = previousComponent.Follow
+                        .Contains(TokenType.Epsilon);
+                    previousComponent.Follow.UnionWith(first);
+                    if (!followShouldHaveEpsilon)
+                        previousComponent.Follow.Remove(TokenType.Epsilon);
+                    // A -> aBb, b =*> epsilon: FOLLOW(B) += FOLLOW(A)
+                    if (first.Contains(TokenType.Epsilon))
+                    {
+                        previousComponent.FollowGenerator.Add(rule);
+                    }
                 }
+
+                // A -> aB: FOLLOW(B) += FOLLOW(A)
+                subRule.Components[^1].FollowGenerator.Add(rule);
             }
         }
     }

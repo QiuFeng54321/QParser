@@ -16,9 +16,9 @@ public class DragonBook4_2_2eGrammarConstructor : GrammarConstructor
         var s = R("S");
         var l = R("L");
         program.Add(s);
-        s.Add(C(T(TokenType.OpenParen), l, T(TokenType.CloseParen)))
+        s.Add(T(TokenType.OpenParen), l, T(TokenType.CloseParen))
             .Add(T(TokenType.Integer));
-        l.Add(C(l, T(TokenType.Comma), s))
+        l.Add(l, T(TokenType.Comma), s)
             .Add(s);
     }
 }

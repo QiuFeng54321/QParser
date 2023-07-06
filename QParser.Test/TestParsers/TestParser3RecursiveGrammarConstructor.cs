@@ -23,10 +23,10 @@ public class TestParser3RecursiveGrammarConstructor : GrammarConstructor
         var b = R("B");
         var c = R("C");
         program.Add(a);
-        a.Add(C(a, b))
-            .Add(C(b, a))
+        a.Add(a, b)
+            .Add(b, a)
             .Add(T(TokenType.Identifier));
-        b.Add(C(c, a))
+        b.Add(c, a)
             .Add(c)
             .Add(T(TokenType.Integer));
         c.Add(C(b, c))

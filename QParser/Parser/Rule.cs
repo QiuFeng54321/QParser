@@ -4,7 +4,7 @@ namespace QParser.Parser;
 
 public class Rule : Nonterminal
 {
-    public readonly HashSet<Nonterminal> SubRules;
+    public readonly HashSet<CompositeNonterminal> SubRules;
 
     protected internal override void InternalGenerateFirstGenerator()
     {
@@ -46,14 +46,19 @@ public class Rule : Nonterminal
 
     public bool IsRedundant => SubRules.Count == 1;
 
-    public Rule(Grammar grammar, string name, HashSet<Nonterminal> subRules) : base(grammar)
+    public Rule(Grammar grammar, string name, HashSet<CompositeNonterminal> subRules) : base(grammar)
     {
         SubRules = subRules;
         Name = name;
     }
-    public Rule Add(Nonterminal nonterminal)
+    public Rule Add(CompositeNonterminal nonterminal)
     {
         SubRules.Add(nonterminal);
+        return this;
+    }
+    public Rule Add(params Nonterminal[] nonterminal)
+    {
+        SubRules.Add(new CompositeNonterminal(Grammar, nonterminal));
         return this;
     }
     

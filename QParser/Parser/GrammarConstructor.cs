@@ -8,7 +8,7 @@ public abstract class GrammarConstructor
     public abstract void Construct();
     public TokenTerminal T(TokenType tokenType) => new(Grammar, tokenType);
     public CompositeNonterminal C(params Nonterminal[] components) => new(Grammar, components);
-    public Rule R(string name, params Nonterminal[] components)
+    public Rule R(string name, params CompositeNonterminal[] components)
     {
         var rule = new Rule(Grammar, name, components.ToHashSet());
         Grammar.AddRule(rule);
@@ -16,5 +16,5 @@ public abstract class GrammarConstructor
     }
 
     public Rule Entry(Rule rule) => Grammar.EntryRule = rule;
-    public TokenTerminal Epsilon => Grammar.Epsilon;
+    public CompositeNonterminal Epsilon => Grammar.Epsilon;
 }

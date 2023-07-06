@@ -16,8 +16,8 @@ public class DragonBook4_2_2fGrammarConstructor : GrammarConstructor
         var program = Entry(R("Program"));
         var s = R("S");
         program.Add(s);
-        s.Add(C(T(TokenType.Plus), s, T(TokenType.Minus), s))
-            .Add(C(T(TokenType.Minus), s, T(TokenType.Plus), s))
+        s.Add(T(TokenType.Plus), s, T(TokenType.Minus), s)
+            .Add(T(TokenType.Minus), s, T(TokenType.Plus), s)
             .Add(Epsilon);
     }
 }
