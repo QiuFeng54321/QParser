@@ -71,10 +71,5 @@ public abstract class Nonterminal
         Grammar = grammar;
     }
 
-    public static NonterminalWithAction operator *(Nonterminal nonterminal, Action<Nonterminal> action)
-    {
-        return new NonterminalWithAction(nonterminal, action);
-    }
-
     public override string ToString() => Name;
 }

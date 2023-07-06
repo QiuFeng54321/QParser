@@ -5,11 +5,6 @@ namespace QParser;
 
 public static class Extensions
 {
-    
-    public static NonterminalWithAction A(this Nonterminal nonterminal, Action<Nonterminal> action)
-    {
-        return new NonterminalWithAction(nonterminal, action);
-    }
 
     /// <summary>
     /// Joins two <see cref="HashSet{T}"/>s and checks if the first hashset is changed (in length)

@@ -102,6 +102,7 @@ public class Grammar
                         break;
                     }
                     case Rule singleRule:
+                        // A -> B: FOLLOW(B) += FOLLOW(A)
                         singleRule.FollowGenerator.Add(rule);
                         break;
                 }
