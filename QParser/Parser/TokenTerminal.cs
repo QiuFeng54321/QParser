@@ -16,7 +16,7 @@ public class TokenTerminal : Nonterminal
         CanBeEmptyGenerated = true;
     }
 
-    protected internal override void InternalGenerateFirstGenerator()
+    protected override void InternalGenerateFirstGenerator()
     {
     }
 

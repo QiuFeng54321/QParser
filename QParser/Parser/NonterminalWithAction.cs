@@ -10,7 +10,7 @@ public class NonterminalWithAction : Nonterminal
         Name = "#";
     }
 
-    protected internal override void InternalGenerateFirstGenerator()
+    protected override void InternalGenerateFirstGenerator()
     {
     }
 

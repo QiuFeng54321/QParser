@@ -8,7 +8,7 @@ public abstract class Nonterminal
     public readonly HashSet<Nonterminal> FirstGenerator = new();
     public readonly HashSet<TokenType> Follow = new();
     public readonly HashSet<Nonterminal> FollowGenerator = new();
-    public readonly Grammar Grammar;
+    protected readonly Grammar Grammar;
     public bool CanBeEmpty;
     public bool CanBeEmptyGenerated;
     protected bool FirstGeneratorGenerated;
@@ -20,7 +20,7 @@ public abstract class Nonterminal
         Grammar = grammar;
     }
 
-    protected internal abstract void InternalGenerateFirstGenerator();
+    protected abstract void InternalGenerateFirstGenerator();
 
     public void GenerateFirstGenerator()
     {

@@ -18,7 +18,7 @@ public class Rule : Nonterminal
     /// </summary>
     public bool IsRedundant => SubRules.Count == 1 && SubRules.First().IsSingleRule;
 
-    protected internal override void InternalGenerateFirstGenerator()
+    protected override void InternalGenerateFirstGenerator()
     {
         foreach (var subRule in SubRules)
         {
@@ -72,7 +72,7 @@ public class Rule : Nonterminal
         }
     }
 
-    private void AppendFirstFollow(StringBuilder sb, Nonterminal rule, bool withFirst, bool withFollow)
+    private static void AppendFirstFollow(StringBuilder sb, Nonterminal rule, bool withFirst, bool withFollow)
     {
         if (rule.CanBeEmpty) sb.Append(" (Can be empty)");
         if (withFirst) sb.Append($" FIRST = {{{string.Join(", ", rule.First)}}}");

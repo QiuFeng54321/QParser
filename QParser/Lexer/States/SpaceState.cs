@@ -5,7 +5,7 @@ namespace QParser.Lexer.States;
 public class SpaceState : State
 {
     public static readonly SpaceState Identity = new(null);
-    public static readonly StateTransition Transition = new(Identity, StateTransitionFlag.None);
+    private static readonly StateTransition Transition = new(Identity, StateTransitionFlag.None);
     public bool CanBeIndent = true;
 
     public SpaceState(State? parentState) : base(parentState)

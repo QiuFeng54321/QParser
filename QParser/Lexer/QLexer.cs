@@ -163,20 +163,18 @@ public class QLexer
         token.End = _charPosition;
         token.Ignore = ignore;
         // Transform into indent or dedent for space tokens
-        if (_currentState is SpaceState { CanBeIndent: true } && token.Start.Column == 0)
+        if (token.Start.Column != 0 || _currentState is not SpaceState { CanBeIndent: true }) return token;
+        if (token.Content.Length > _indentStack.Peek())
         {
-            if (token.Content.Length > _indentStack.Peek())
-            {
-                token.TokenType = TokenType.Indent;
-                token.Ignore = false;
-                _indentStack.Push(token.Content.Length);
-            }
-            else if (token.Content.Length < _indentStack.Peek())
-            {
-                token.TokenType = TokenType.Dedent;
-                token.Ignore = false;
-                _indentStack.Pop();
-            }
+            token.TokenType = TokenType.Indent;
+            token.Ignore = false;
+            _indentStack.Push(token.Content.Length);
+        }
+        else if (token.Content.Length < _indentStack.Peek())
+        {
+            token.TokenType = TokenType.Dedent;
+            token.Ignore = false;
+            _indentStack.Pop();
         }
 
         return token;

@@ -53,7 +53,7 @@ public class Grammar
         FirstGenerated = true;
     }
 
-    public void GenerateFollowGenerator()
+    private void GenerateFollowGenerator()
     {
         // Traverse every sub-rule
         foreach (var rule in Rules)

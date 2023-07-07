@@ -5,27 +5,27 @@ namespace QParser.Parser;
 public abstract class GrammarConstructor
 {
     public readonly Grammar Grammar = new();
-    public CompositeNonterminal Epsilon => Grammar.Epsilon;
+    protected CompositeNonterminal Epsilon => Grammar.Epsilon;
     public abstract void Construct();
 
-    public TokenTerminal T(TokenType tokenType)
+    protected TokenTerminal T(TokenType tokenType)
     {
         return new TokenTerminal(Grammar, tokenType);
     }
 
-    public CompositeNonterminal C(params Nonterminal[] components)
+    protected CompositeNonterminal C(params Nonterminal[] components)
     {
         return new CompositeNonterminal(Grammar, components);
     }
 
-    public Rule R(string name, params CompositeNonterminal[] components)
+    protected Rule R(string name, params CompositeNonterminal[] components)
     {
         var rule = new Rule(Grammar, name, components.ToHashSet());
         Grammar.AddRule(rule);
         return rule;
     }
 
-    public Rule Entry(Rule rule)
+    protected Rule Entry(Rule rule)
     {
         return Grammar.EntryRule = rule;
     }

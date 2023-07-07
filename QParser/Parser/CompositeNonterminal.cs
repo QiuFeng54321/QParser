@@ -35,7 +35,7 @@ public class CompositeNonterminal : Nonterminal
         return new CompositeNonterminal(subRule1.Grammar, subRule1.Components.Concat(subRule2.Components));
     }
 
-    protected internal override void InternalGenerateFirstGenerator()
+    protected override void InternalGenerateFirstGenerator()
     {
         foreach (var component in Components)
         {
