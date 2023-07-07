@@ -1,20 +1,24 @@
-using System.Text;
 using QParser.Lexer;
 
 namespace QParser.Parser;
 
 public abstract class Nonterminal
 {
-
-    public string Name = "?";
-    public readonly Grammar Grammar;
     public readonly HashSet<TokenType> First = new();
-    public readonly HashSet<TokenType> Follow = new();
     public readonly HashSet<Nonterminal> FirstGenerator = new();
+    public readonly HashSet<TokenType> Follow = new();
     public readonly HashSet<Nonterminal> FollowGenerator = new();
-    protected bool FirstGeneratorGenerated;
+    public readonly Grammar Grammar;
     public bool CanBeEmpty;
     public bool CanBeEmptyGenerated;
+    protected bool FirstGeneratorGenerated;
+
+    public string Name = "?";
+
+    protected Nonterminal(Grammar grammar)
+    {
+        Grammar = grammar;
+    }
 
     protected internal abstract void InternalGenerateFirstGenerator();
 
@@ -26,28 +30,22 @@ public abstract class Nonterminal
     }
 
     /// <summary>
-    /// Performs a round of adding FIRST(x) for x in FirstGenerator to FIRST(this) and checks
-    /// if FIRST(this) is changed
+    ///     Performs a round of adding FIRST(x) for x in FirstGenerator to FIRST(this) and checks
+    ///     if FIRST(this) is changed
     /// </summary>
     /// <returns>If FIRST(this) has a change in length</returns>
     public bool RoundGenerateFirst()
     {
         var changed = false;
-        foreach (var nonterminal in FirstGenerator)
-        {
-            changed |= First.UnionAndCheckChange(nonterminal.First);
-        }
+        foreach (var nonterminal in FirstGenerator) changed |= First.UnionAndCheckChange(nonterminal.First);
 
         return changed;
     }
-    
+
     public bool RoundGenerateFollow()
     {
         var changed = false;
-        foreach (var nonterminal in FollowGenerator)
-        {
-            changed |= Follow.UnionAndCheckChange(nonterminal.Follow);
-        }
+        foreach (var nonterminal in FollowGenerator) changed |= Follow.UnionAndCheckChange(nonterminal.Follow);
 
         return changed;
     }
@@ -55,7 +53,7 @@ public abstract class Nonterminal
     protected abstract void InternalGenerateCanBeEmpty();
 
     /// <summary>
-    /// Performs a round of updating CanBeEmpty.
+    ///     Performs a round of updating CanBeEmpty.
     /// </summary>
     /// <returns>If CanBeEmpty has changed its value</returns>
     public bool GenerateCanBeEmpty()
@@ -66,10 +64,8 @@ public abstract class Nonterminal
         return prev != CanBeEmpty;
     }
 
-    protected Nonterminal(Grammar grammar)
+    public override string ToString()
     {
-        Grammar = grammar;
+        return Name;
     }
-
-    public override string ToString() => Name;
 }

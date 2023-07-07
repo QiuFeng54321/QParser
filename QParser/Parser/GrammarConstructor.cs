@@ -5,9 +5,19 @@ namespace QParser.Parser;
 public abstract class GrammarConstructor
 {
     public readonly Grammar Grammar = new();
+    public CompositeNonterminal Epsilon => Grammar.Epsilon;
     public abstract void Construct();
-    public TokenTerminal T(TokenType tokenType) => new(Grammar, tokenType);
-    public CompositeNonterminal C(params Nonterminal[] components) => new(Grammar, components);
+
+    public TokenTerminal T(TokenType tokenType)
+    {
+        return new TokenTerminal(Grammar, tokenType);
+    }
+
+    public CompositeNonterminal C(params Nonterminal[] components)
+    {
+        return new CompositeNonterminal(Grammar, components);
+    }
+
     public Rule R(string name, params CompositeNonterminal[] components)
     {
         var rule = new Rule(Grammar, name, components.ToHashSet());
@@ -15,6 +25,8 @@ public abstract class GrammarConstructor
         return rule;
     }
 
-    public Rule Entry(Rule rule) => Grammar.EntryRule = rule;
-    public CompositeNonterminal Epsilon => Grammar.Epsilon;
+    public Rule Entry(Rule rule)
+    {
+        return Grammar.EntryRule = rule;
+    }
 }

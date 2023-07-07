@@ -40,5 +40,4 @@ public enum TokenType
     Space,
     Unknown,
     Epsilon
-    
 }

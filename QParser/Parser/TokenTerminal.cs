@@ -1,4 +1,3 @@
-using System.Text;
 using QParser.Lexer;
 
 namespace QParser.Parser;

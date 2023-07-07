@@ -6,16 +6,21 @@ namespace QParser.Parser;
 
 public class Grammar
 {
-    public readonly HashSet<Rule> Rules = new();
-    public void AddRule(Rule rule) => Rules.Add(rule);
     public readonly CompositeNonterminal Epsilon;
-    public Rule? EntryRule { set; get; }
+    public readonly HashSet<Rule> Rules = new();
     public bool FirstGenerated;
     public bool FollowGenerated;
 
     public Grammar()
     {
-        Epsilon = new(this, new TokenTerminal(this, TokenType.Epsilon));
+        Epsilon = new CompositeNonterminal(this, new TokenTerminal(this, TokenType.Epsilon));
+    }
+
+    public Rule? EntryRule { set; get; }
+
+    public void AddRule(Rule rule)
+    {
+        Rules.Add(rule);
     }
 
     public void GenerateCanBeEmpty()
@@ -24,10 +29,7 @@ public class Grammar
         while (changed)
         {
             changed = false;
-            foreach (var rule in Rules)
-            {
-                changed |= rule.GenerateCanBeEmpty();
-            }
+            foreach (var rule in Rules) changed |= rule.GenerateCanBeEmpty();
         }
     }
 
@@ -35,20 +37,14 @@ public class Grammar
     {
         if (FirstGenerated) return;
         var changed = true;
-        foreach (var rule in Rules)
-        {
-            rule.GenerateFirstGenerator();
-        }
+        foreach (var rule in Rules) rule.GenerateFirstGenerator();
 
         while (changed)
         {
             changed = false;
             foreach (var rule in Rules)
             {
-                foreach (var subRule in rule.FirstGenerator)
-                {
-                    changed |= subRule.RoundGenerateFirst();
-                }
+                foreach (var subRule in rule.FirstGenerator) changed |= subRule.RoundGenerateFirst();
 
                 changed |= rule.RoundGenerateFirst();
             }
@@ -61,39 +57,31 @@ public class Grammar
     {
         // Traverse every sub-rule
         foreach (var rule in Rules)
+        foreach (var subRule in rule.SubRules)
         {
-            foreach (var subRule in rule.SubRules)
+            // Iterate backwards so that FIRST set can be generated more efficiently
+            HashSet<TokenType> first = new();
+            for (var i = subRule.Components.Length - 1; i >= 1; i--)
             {
-                // Iterate backwards so that FIRST set can be generated more efficiently
-                HashSet<TokenType> first = new();
-                for (var i = subRule.Components.Length - 1; i >= 1; i--)
-                {
-                    // Only keep the FIRST set from the left to the first non-epsilon-deriving component
-                    if (!subRule.Components[i].CanBeEmpty)
-                    {
-                        first.Clear();
-                    }
+                // Only keep the FIRST set from the left to the first non-epsilon-deriving component
+                if (!subRule.Components[i].CanBeEmpty) first.Clear();
 
-                    first.UnionWith(subRule.Components[i].First);
+                first.UnionWith(subRule.Components[i].First);
 
-                    var previousComponent = subRule.Components[i - 1];
-                    // Do not add epsilon if FIRST doesn't include one
-                    // A -> aBb: FOLLOW(B) += FIRST(b) except epsilon
-                    var followShouldHaveEpsilon = previousComponent.Follow
-                        .Contains(TokenType.Epsilon);
-                    previousComponent.Follow.UnionWith(first);
-                    if (!followShouldHaveEpsilon)
-                        previousComponent.Follow.Remove(TokenType.Epsilon);
-                    // A -> aBb, b =*> epsilon: FOLLOW(B) += FOLLOW(A)
-                    if (first.Contains(TokenType.Epsilon))
-                    {
-                        previousComponent.FollowGenerator.Add(rule);
-                    }
-                }
-
-                // A -> aB: FOLLOW(B) += FOLLOW(A)
-                subRule.Components[^1].FollowGenerator.Add(rule);
+                var previousComponent = subRule.Components[i - 1];
+                // Do not add epsilon if FIRST doesn't include one
+                // A -> aBb: FOLLOW(B) += FIRST(b) except epsilon
+                var followShouldHaveEpsilon = previousComponent.Follow
+                    .Contains(TokenType.Epsilon);
+                previousComponent.Follow.UnionWith(first);
+                if (!followShouldHaveEpsilon)
+                    previousComponent.Follow.Remove(TokenType.Epsilon);
+                // A -> aBb, b =*> epsilon: FOLLOW(B) += FOLLOW(A)
+                if (first.Contains(TokenType.Epsilon)) previousComponent.FollowGenerator.Add(rule);
             }
+
+            // A -> aB: FOLLOW(B) += FOLLOW(A)
+            subRule.Components[^1].FollowGenerator.Add(rule);
         }
     }
 
@@ -108,10 +96,7 @@ public class Grammar
             changed = false;
             foreach (var rule in Rules)
             {
-                foreach (var subRule in rule.FollowGenerator)
-                {
-                    changed |= subRule.RoundGenerateFollow();
-                }
+                foreach (var subRule in rule.FollowGenerator) changed |= subRule.RoundGenerateFollow();
 
                 changed |= rule.RoundGenerateFollow();
             }
@@ -148,10 +133,7 @@ public class Grammar
                 }
                 else
                 {
-                    if (subRule.First.Intersect(rule.Follow).Any())
-                    {
-                        overlappingSubRule = subRule;
-                    }
+                    if (subRule.First.Intersect(rule.Follow).Any()) overlappingSubRule = subRule;
                 }
             }
 
@@ -173,10 +155,7 @@ public class Grammar
     public string ToString(bool withFirst, bool withFollow)
     {
         var sb = new StringBuilder();
-        foreach (var rule in Rules)
-        {
-            rule.Format(sb, withFirst, withFollow);
-        }
+        foreach (var rule in Rules) rule.Format(sb, withFirst, withFollow);
 
         return sb.ToString();
     }

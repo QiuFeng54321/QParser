@@ -4,10 +4,10 @@ namespace QParser.Lexer.States;
 
 public class SpaceState : State
 {
-    public static readonly SpaceState Identity = new (null);
+    public static readonly SpaceState Identity = new(null);
     public static readonly StateTransition Transition = new(Identity, StateTransitionFlag.None);
     public bool CanBeIndent = true;
-    
+
     public SpaceState(State? parentState) : base(parentState)
     {
     }
@@ -18,15 +18,14 @@ public class SpaceState : State
         if (c == '\n')
         {
             CanBeIndent = false;
-            return new(this, StateTransitionFlag.Accept | StateTransitionFlag.ConsumeChar | StateTransitionFlag.Ignore);
+            return new StateTransition(this,
+                StateTransitionFlag.Accept | StateTransitionFlag.ConsumeChar | StateTransitionFlag.Ignore);
         }
+
         // '      '
-        if (char.IsWhiteSpace(c))
-        {
-            return new(this, StateTransitionFlag.ConsumeChar);
-        }
+        if (char.IsWhiteSpace(c)) return new StateTransition(this, StateTransitionFlag.ConsumeChar);
         // '   d', don't consume d, accept and mark ignore
-        return new(this, StateTransitionFlag.Accept | StateTransitionFlag.Ignore);
+        return new StateTransition(this, StateTransitionFlag.Accept | StateTransitionFlag.Ignore);
     }
 
     public override Token Accept(string str)

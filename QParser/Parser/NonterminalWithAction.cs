@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace QParser.Parser;
 
 public class NonterminalWithAction : Nonterminal
@@ -14,7 +12,6 @@ public class NonterminalWithAction : Nonterminal
 
     protected internal override void InternalGenerateFirstGenerator()
     {
-        
     }
 
     protected override void InternalGenerateCanBeEmpty()

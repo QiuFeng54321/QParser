@@ -10,7 +10,7 @@ public class IntegerState : State
 
     public override StateTransition NextState(char c)
     {
-        if (Check(c)) return new(this, StateTransitionFlag.ConsumeChar);
+        if (Check(c)) return new StateTransition(this, StateTransitionFlag.ConsumeChar);
         if (c is '.') return new RealState(ParentState).MakeTransitionToThis();
         return StateTransition.Accept;
     }
@@ -28,7 +28,7 @@ public class IntegerState : State
     public override StateTransition MakeTransitionToThis()
     {
         // None: We want to check the first digit
-        return new(this, StateTransitionFlag.None);
+        return new StateTransition(this, StateTransitionFlag.None);
     }
 
     public override bool OfferTerminate()

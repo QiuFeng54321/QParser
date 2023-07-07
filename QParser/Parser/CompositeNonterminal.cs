@@ -6,27 +6,30 @@ public class CompositeNonterminal : Nonterminal
 {
     public readonly Nonterminal[] Components;
 
-    
-    /// <summary>
-    /// This composite non-terminal contains only one token
-    /// </summary>
-    
-    public bool IsSingleToken => Components is [TokenTerminal];
-    /// <summary>
-    /// This composite non-terminal contains only one rule
-    /// </summary>
-    public bool IsSingleRule => Components is [Rule];
-
-    public CompositeNonterminal(Grammar grammar, IEnumerable<Nonterminal> components) : this(grammar, components.ToArray()) {}
+    public CompositeNonterminal(Grammar grammar, IEnumerable<Nonterminal> components) : this(grammar,
+        components.ToArray())
+    {
+    }
 
     public CompositeNonterminal(Grammar grammar, params Nonterminal[] components) : base(grammar)
     {
         if (components.Length == 0)
-        {
             throw new InvalidOperationException("Redundant composite rule. For epsilon, use rule.Add(Epsilon)");
-        }
         Components = components;
     }
+
+
+    /// <summary>
+    ///     This composite non-terminal contains only one token
+    /// </summary>
+
+    public bool IsSingleToken => Components is [TokenTerminal];
+
+    /// <summary>
+    ///     This composite non-terminal contains only one rule
+    /// </summary>
+    public bool IsSingleRule => Components is [Rule];
+
     public static CompositeNonterminal operator +(CompositeNonterminal subRule1, CompositeNonterminal subRule2)
     {
         return new CompositeNonterminal(subRule1.Grammar, subRule1.Components.Concat(subRule2.Components));

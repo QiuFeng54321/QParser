@@ -2,10 +2,9 @@ namespace QParser;
 
 public struct CharPosition
 {
-    
     public int Line;
     public int Column;
-    public string FileName;
+    public readonly string FileName;
     public static int TabWidth = 4;
 
     public CharPosition(int line, int column, string fileName = "")

@@ -2,11 +2,16 @@ namespace QParser.Lexer.States;
 
 public class StateTransition
 {
-    public static readonly StateTransition AcceptConsume = new(null, StateTransitionFlag.Accept | StateTransitionFlag.ConsumeChar);
+    public static readonly StateTransition AcceptConsume =
+        new(null, StateTransitionFlag.Accept | StateTransitionFlag.ConsumeChar);
+
     public static readonly StateTransition Accept = new(null, StateTransitionFlag.Accept);
-    public static readonly StateTransition Error = new(null, StateTransitionFlag.Error | StateTransitionFlag.ConsumeChar);
-    public readonly State? State;
+
+    public static readonly StateTransition Error = new(null,
+        StateTransitionFlag.Error | StateTransitionFlag.ConsumeChar);
+
     public readonly StateTransitionFlag Flag;
+    public readonly State? State;
 
     public StateTransition(State? state, StateTransitionFlag flag)
     {

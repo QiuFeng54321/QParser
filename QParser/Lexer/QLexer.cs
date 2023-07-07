@@ -7,13 +7,6 @@ namespace QParser.Lexer;
 
 public class QLexer
 {
-    private readonly StreamReader _stream;
-    private char _lookaheadChar;
-    private State _currentState;
-    private readonly RootState _rootState;
-    private CharPosition _charPosition;
-    private readonly StringBuilder _stringBuilder = new();
-    private bool _reserveOneChar;
     private readonly Stack<int> _indentStack = new();
 
     private readonly Dictionary<string, TokenType> _plainSymbols = new()
@@ -49,6 +42,14 @@ public class QLexer
         [","] = TokenType.Comma
     };
 
+    private readonly RootState _rootState;
+    private readonly StreamReader _stream;
+    private readonly StringBuilder _stringBuilder = new();
+    private CharPosition _charPosition;
+    private State _currentState;
+    private char _lookaheadChar;
+    private bool _reserveOneChar;
+
     public QLexer(Stream stream, string filePath)
     {
         _stream = new StreamReader(stream, Encoding.UTF8);
@@ -61,10 +62,7 @@ public class QLexer
 
     private void RegisterPlainSymbols()
     {
-        foreach (var (str, tokenType) in _plainSymbols)
-        {
-            _rootState.RootTrieState.Add(str, tokenType);
-        }
+        foreach (var (str, tokenType) in _plainSymbols) _rootState.RootTrieState.Add(str, tokenType);
     }
 
     private void RegisterNumberStateTransition()
@@ -72,10 +70,8 @@ public class QLexer
         foreach (var prefix in new[] { "", "+", "-", "." })
         {
             for (var i = 0; i < 10; i++)
-            {
-                _rootState.RootTrieState.Add(prefix + i, 
+                _rootState.RootTrieState.Add(prefix + i,
                     prefix is not "." ? new IntegerState(null) : new RealState(null));
-            }
 
             if (prefix is not ("" or ".")) _rootState.RootTrieState.Add(prefix + ".", new IntegerState(null));
         }
@@ -103,7 +99,7 @@ public class QLexer
     }
 
     /// <summary>
-    /// Reads the next token. If the stream is at its end, returns <see cref="TokenType.Eof"/>
+    ///     Reads the next token. If the stream is at its end, returns <see cref="TokenType.Eof" />
     /// </summary>
     /// <returns> The next token </returns>
     /// <exception cref="FormatException">The token processor cannot identify this token</exception>
@@ -148,10 +144,8 @@ public class QLexer
 
             if (transition.State != null) _currentState = transition.State;
             if (transition.Flag.HasFlag(StateTransitionFlag.Error))
-            {
                 throw new FormatException(
                     $"Unrecognized token: \"{_stringBuilder}\" at {_charPosition.ToStringWithFile()}");
-            }
 
             if (consume)
             {

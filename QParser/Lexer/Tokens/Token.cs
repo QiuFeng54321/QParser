@@ -4,10 +4,10 @@ namespace QParser.Lexer.Tokens;
 
 public class Token
 {
-    public TokenType TokenType;
     public readonly string Content;
-    public CharPosition Start, End;
     public bool Ignore;
+    public CharPosition Start, End;
+    public TokenType TokenType;
 
     public Token(TokenType tokenType, string content)
     {
