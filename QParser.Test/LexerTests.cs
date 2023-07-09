@@ -34,6 +34,14 @@ public class LexerTestsFixtureData
                 TokenType.NotEqual,
                 TokenType.Identifier
             });
+            yield return new TestFixtureData("Last char token", new[]
+                {
+                    "a"
+                },
+                new[]
+                {
+                    TokenType.Identifier
+                });
             yield return new TestFixtureData("Indent", new[]
             {
                 " ",
@@ -68,7 +76,8 @@ public class LexerTestsFixtureData
                     "4.23",
                     ".",
                     " ",
-                    "-.3"
+                    "-",
+                    ".3"
                 },
                 new[]
                 {
@@ -81,6 +90,7 @@ public class LexerTestsFixtureData
                     TokenType.Real,
                     TokenType.Dot,
                     TokenType.Space,
+                    TokenType.Minus,
                     TokenType.Real
                 });
         }
@@ -90,6 +100,12 @@ public class LexerTestsFixtureData
 [TestFixtureSource(typeof(LexerTestsFixtureData), nameof(LexerTestsFixtureData.FixtureParams))]
 public class LexerTests
 {
+    [SetUp]
+    public void Setup()
+    {
+        Console.WriteLine($"Test {_name}\nContents:\n{_contents}\n------------------------------");
+    }
+
     private readonly QLexer _lexer;
     private readonly List<Token> _tokens = new();
     private readonly string _contents;
@@ -105,12 +121,6 @@ public class LexerTests
         _name = name;
         _contents = string.Join("", _expectedTokenContents);
         _lexer = new QLexer(new MemoryStream(Encoding.UTF8.GetBytes(_contents)), "TestFile");
-    }
-
-    [SetUp]
-    public void Setup()
-    {
-        Console.WriteLine($"Test {_name}\nContents:\n{_contents}\n------------------------------");
     }
 
     [Test]
