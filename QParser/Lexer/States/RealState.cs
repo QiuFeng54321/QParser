@@ -21,7 +21,7 @@ public class RealState : State
 
     public override Token Accept(string str)
     {
-        return new RealToken(TokenType.Real, str);
+        return new RealToken(str);
     }
 
     /// <summary>

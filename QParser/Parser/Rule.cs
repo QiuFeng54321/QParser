@@ -24,7 +24,7 @@ public class Rule : Nonterminal
         {
             subRule.GenerateFirstGenerator();
             if (subRule.IsSingleToken)
-                First.UnionWith(subRule.Components[0].First);
+                First.UnionWith(subRule.First);
             else
                 FirstGenerator.Add(subRule);
         }

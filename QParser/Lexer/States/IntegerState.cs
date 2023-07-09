@@ -22,7 +22,7 @@ public class IntegerState : State
 
     public override Token Accept(string str)
     {
-        return new IntegerToken(TokenType.Integer, str);
+        return new IntegerToken(str);
     }
 
     public override StateTransition MakeTransitionToThis()

@@ -6,7 +6,8 @@ namespace QParser.Parser;
 
 public class Grammar
 {
-    public readonly CompositeNonterminal Epsilon;
+    public readonly CompositeNonterminal Epsilon, Eof;
+    public readonly LL1ParseTable LL1ParseTable = new();
     public readonly HashSet<Rule> Rules = new();
     public bool FirstGenerated;
     public bool FollowGenerated;
@@ -14,6 +15,7 @@ public class Grammar
     public Grammar()
     {
         Epsilon = new CompositeNonterminal(this, new TokenTerminal(this, TokenType.Epsilon));
+        Eof = new CompositeNonterminal(this, new TokenTerminal(this, TokenType.Eof));
     }
 
     public Rule? EntryRule { set; get; }
