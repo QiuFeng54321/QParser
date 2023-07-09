@@ -26,6 +26,12 @@ public class CompositeNonterminal : Nonterminal
     public bool IsSingleToken => Components is [TokenTerminal];
 
     /// <summary>
+    ///     If this composite non-terminal contains only one token, returns the only token
+    /// </summary>
+    /// <exception cref="InvalidOperationException">There is no token / the first terminal is not token</exception>
+    public TokenTerminal SingleToken => Components[0] as TokenTerminal ?? throw new InvalidOperationException();
+
+    /// <summary>
     ///     This composite non-terminal contains only one rule
     /// </summary>
     public bool IsSingleRule => Components is [Rule];
@@ -37,13 +43,20 @@ public class CompositeNonterminal : Nonterminal
 
     protected override void InternalGenerateFirstGenerator()
     {
-        foreach (var component in Components)
+        if (IsSingleToken)
         {
-            FirstGenerator.Add(component);
-            if (!component.CanBeEmpty) return;
+            First.UnionWith(SingleToken.First);
         }
+        else
+        {
+            foreach (var component in Components)
+            {
+                FirstGenerator.Add(component);
+                if (!component.CanBeEmpty) return;
+            }
 
-        First.Add(TokenType.Epsilon);
+            First.Add(TokenType.Epsilon);
+        }
     }
 
     protected override void InternalGenerateCanBeEmpty()
