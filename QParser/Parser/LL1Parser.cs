@@ -28,6 +28,7 @@ public class LL1Parser
     /// <returns>If the lookahead is consumed</returns>
     private bool Process(Token lookahead)
     {
+        Console.WriteLine($"Processing token {lookahead}");
         var next = _stack.Pop();
         if (next is TokenTerminal tokenTerminal)
         {

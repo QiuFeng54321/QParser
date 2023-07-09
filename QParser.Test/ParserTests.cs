@@ -1,6 +1,6 @@
 using System.Collections;
+using System.Text;
 using QParser.Lexer;
-using QParser.Lexer.Tokens;
 using QParser.Parser;
 using QParser.Test.TestParsers;
 
@@ -12,14 +12,11 @@ public class ParserTestsFixtureData
     {
         get
         {
-            yield return new TestFixtureData(new TestParser2GrammarConstructor(), new ParserTestCase(new[]
-            {
-                new IntegerToken("3"), new Token(TokenType.Plus, "+"), new RealToken("4.5")
-            }));
-            yield return new TestFixtureData(new TestParser2GrammarConstructor(), new ParserTestCase(new Token[]
-            {
-                new IdentifierToken("??")
-            }, ParseResult.Failure));
+            yield return new TestFixtureData(new TestParser2GrammarConstructor(), new ParserTestCase("3+4.5"));
+            yield return new TestFixtureData(new TestParser2GrammarConstructor(),
+                new ParserTestCase("(3 + 5) * 2 + 3 * 9"));
+            yield return new TestFixtureData(new TestParser2GrammarConstructor(),
+                new ParserTestCase("??", ParseResult.Failure));
         }
     }
 }
@@ -30,7 +27,7 @@ public enum ParseResult
     Failure
 }
 
-public record ParserTestCase(Token[] Tokens, ParseResult Result = ParseResult.Success);
+public record ParserTestCase(string Input, ParseResult Result = ParseResult.Success);
 
 [TestFixtureSource(typeof(ParserTestsFixtureData), nameof(ParserTestsFixtureData.FixtureParams))]
 public class ParserTests
@@ -44,11 +41,13 @@ public class ParserTests
 
     private readonly GrammarConstructor _grammarConstructor;
     private readonly ParserTestCase _parserTestCase;
+    private readonly QLexer _qLexer;
 
     public ParserTests(GrammarConstructor grammarConstructor, ParserTestCase parserTestCase)
     {
         _grammarConstructor = grammarConstructor;
         _parserTestCase = parserTestCase;
+        _qLexer = new QLexer(new MemoryStream(Encoding.UTF8.GetBytes(parserTestCase.Input)), "TestFile");
     }
 
     [Test]
@@ -69,8 +68,11 @@ public class ParserTests
         parser.DumpTable();
         if (_parserTestCase.Result is ParseResult.Success)
         {
-            foreach (var token in _parserTestCase.Tokens) parser.Feed(token);
-            parser.Feed(new Token(TokenType.Eof, "$"));
+            foreach (var token in _qLexer)
+            {
+                if (token.Ignore) continue;
+                parser.Feed(token);
+            }
 
             Assert.That(parser.Accepted, Is.True);
         }
@@ -78,7 +80,11 @@ public class ParserTests
         {
             Assert.Catch(() =>
             {
-                foreach (var token in _parserTestCase.Tokens) parser.Feed(token);
+                foreach (var token in _qLexer)
+                {
+                    if (token.Ignore) continue;
+                    parser.Feed(token);
+                }
             });
         }
     }

@@ -1,11 +1,11 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Collections;
+using System.Text;
 using QParser.Lexer.States;
 using QParser.Lexer.Tokens;
 
 namespace QParser.Lexer;
 
-public class QLexer
+public class QLexer : IEnumerable<Token>
 {
     private readonly Stack<int> _indentStack = new();
 
@@ -60,6 +60,23 @@ public class QLexer
         RegisterNumberStateTransition();
     }
 
+    private bool NextCharIsEof => _lookaheadChar == '\0' && _stream.EndOfStream;
+
+    public IEnumerator<Token> GetEnumerator()
+    {
+        Token token;
+        do
+        {
+            token = NextToken();
+            yield return token;
+        } while (token.TokenType is not TokenType.Eof);
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
     private void RegisterPlainSymbols()
     {
         foreach (var (str, tokenType) in _plainSymbols) _rootState.RootTrieState.Add(str, tokenType);
@@ -67,7 +84,7 @@ public class QLexer
 
     private void RegisterNumberStateTransition()
     {
-        foreach (var prefix in new[] { "", "+", "-", "." })
+        foreach (var prefix in new[] { "", "." })
         {
             for (var i = 0; i < 10; i++)
                 _rootState.RootTrieState.Add(prefix + i,
@@ -79,7 +96,7 @@ public class QLexer
 
     private void ReserveOneChar()
     {
-        Console.WriteLine($"Reserve '{Regex.Escape(_lookaheadChar.ToString())}'");
+        // Console.WriteLine($"Reserve '{Regex.Escape(_lookaheadChar.ToString())}'");
         _reserveOneChar = true;
     }
 
@@ -88,15 +105,16 @@ public class QLexer
         if (_reserveOneChar)
         {
             _reserveOneChar = false;
-            Console.WriteLine($"Release {Regex.Escape(_lookaheadChar.ToString())}");
+            // Console.WriteLine($"Release {Regex.Escape(_lookaheadChar.ToString())}");
             return _lookaheadChar;
         }
 
-        if (_stream.EndOfStream) return '\0';
+        if (_stream.EndOfStream) return _lookaheadChar = '\0';
         _lookaheadChar = (char)_stream.Read();
         _charPosition.Feed(_lookaheadChar);
         return _lookaheadChar;
     }
+
 
     /// <summary>
     ///     Reads the next token. If the stream is at its end, returns <see cref="TokenType.Eof" />
@@ -105,7 +123,7 @@ public class QLexer
     /// <exception cref="FormatException">The token processor cannot identify this token</exception>
     public Token NextToken()
     {
-        if (_stream.EndOfStream) return new Token(TokenType.Eof, "$");
+        if (NextCharIsEof) return new Token(TokenType.Eof, "$");
         _currentState = _rootState;
         _stringBuilder.Clear();
         var accept = false;
@@ -133,7 +151,7 @@ public class QLexer
             }
 
             var transition = _currentState.NextState(c);
-            Console.WriteLine($"'{Regex.Escape(c.ToString())}': {transition}");
+            // Console.WriteLine($"'{Regex.Escape(c.ToString())}': {transition}");
             var consume = transition.Flag.HasFlag(StateTransitionFlag.ConsumeChar);
 
             if (transition.Flag.HasFlag(StateTransitionFlag.Accept))
