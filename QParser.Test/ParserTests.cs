@@ -14,9 +14,11 @@ public class ParserTestsFixtureData
         {
             yield return new TestFixtureData(new TestParser2GrammarConstructor(), new ParserTestCase("3+4.5"));
             yield return new TestFixtureData(new TestParser2GrammarConstructor(),
-                new ParserTestCase("(3 + 5) * 2 + 3 * 9"));
+                new ParserTestCase("(3 + 5) * 2.6 + 3 * 9.1"));
             yield return new TestFixtureData(new TestParser2GrammarConstructor(),
-                new ParserTestCase("??", ParseResult.Failure));
+                new ParserTestCase("3 + + 2.6 * 3.1 4.5 * 6 + (( 3", ParseResult.Failure));
+            yield return new TestFixtureData(new TestParser2GrammarConstructor(),
+                new ParserTestCase(")32*((3)", ParseResult.Failure));
         }
     }
 }
@@ -42,12 +44,16 @@ public class ParserTests
     private readonly GrammarConstructor _grammarConstructor;
     private readonly ParserTestCase _parserTestCase;
     private readonly QLexer _qLexer;
+    private readonly FileInformation _fileInformation;
 
     public ParserTests(GrammarConstructor grammarConstructor, ParserTestCase parserTestCase)
     {
         _grammarConstructor = grammarConstructor;
         _parserTestCase = parserTestCase;
-        _qLexer = new QLexer(new MemoryStream(Encoding.UTF8.GetBytes(parserTestCase.Input)), "TestFile");
+        _fileInformation = new FileInformation("TestFile");
+        var stream = new SourceInputStream(_fileInformation,
+            new MemoryStream(Encoding.UTF8.GetBytes(parserTestCase.Input)));
+        _qLexer = new QLexer(stream, _fileInformation);
     }
 
     [Test]
@@ -64,28 +70,23 @@ public class ParserTests
         _grammarConstructor.Grammar.GenerateFollow();
         var canBeLL1 = _grammarConstructor.Grammar.CanBeLL1();
         if (canBeLL1.IsFailed) Assert.Pass();
-        var parser = new LL1Parser(_grammarConstructor.Grammar);
+        var parser = new LL1Parser(_grammarConstructor.Grammar, _fileInformation);
         parser.DumpTable();
+
+        foreach (var token in _qLexer)
+        {
+            if (token.Ignore) continue;
+            parser.Feed(token);
+        }
+
+        _fileInformation.DumpExceptions();
         if (_parserTestCase.Result is ParseResult.Success)
         {
-            foreach (var token in _qLexer)
-            {
-                if (token.Ignore) continue;
-                parser.Feed(token);
-            }
-
             Assert.That(parser.Accepted, Is.True);
         }
         else
         {
-            Assert.Catch(() =>
-            {
-                foreach (var token in _qLexer)
-                {
-                    if (token.Ignore) continue;
-                    parser.Feed(token);
-                }
-            });
+            Assert.That(_fileInformation.Exceptions, Is.Not.Empty);
         }
     }
 }

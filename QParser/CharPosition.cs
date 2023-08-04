@@ -2,16 +2,17 @@ namespace QParser;
 
 public struct CharPosition
 {
-    public int Line;
-    public int Column;
-    public readonly string FileName;
+    public int Line = -1;
+    public int Column = -1;
+    public readonly FileInformation FileInformation;
     public static int TabWidth = 4;
+    public static readonly CharPosition Undefined = new();
 
-    public CharPosition(int line, int column, string fileName = "")
+    public CharPosition(int line, int column, FileInformation fileInformation)
     {
         Line = line;
         Column = column;
-        FileName = fileName;
+        FileInformation = fileInformation;
     }
 
     public override string ToString()
@@ -21,7 +22,7 @@ public struct CharPosition
 
     public string ToStringWithFile()
     {
-        return $"{FileName}: {ToString()}";
+        return $"{FileInformation}: {ToString()}";
     }
 
     public void Feed(char c)

@@ -10,10 +10,12 @@ public class LL1Parser
     private readonly List<Token> _matched = new();
     private readonly LL1ParseTable _parseTable = new();
     private readonly Stack<Nonterminal> _stack = new();
+    private readonly FileInformation FileInformation;
 
-    public LL1Parser(Grammar grammar)
+    public LL1Parser(Grammar grammar, FileInformation fileInformation)
     {
         _grammar = grammar;
+        FileInformation = fileInformation;
         _stack.Push(_grammar.Eof.SingleToken);
         _stack.Push(_grammar.EntryRule ?? throw new InvalidOperationException("Undefined entry rule for grammar"));
         var genRes = _parseTable.GenerateFromGrammar(_grammar);
@@ -34,7 +36,11 @@ public class LL1Parser
         {
             if (tokenTerminal.TokenType is TokenType.Epsilon) return false;
             if (tokenTerminal.TokenType != lookahead.TokenType)
-                throw new FormatException($"Unexpected token: {lookahead}");
+            {
+                new PrettyException(FileInformation, lookahead.SourceRange,
+                    $"Unexpected token: {lookahead}. Expecting {tokenTerminal.TokenType}").AddToExceptions();
+                return false;
+            }
 
             _matched.Add(lookahead);
             return true;
@@ -43,8 +49,14 @@ public class LL1Parser
         if (next is Rule rule)
         {
             if (!_parseTable.TryGet(rule, lookahead.TokenType, out var compositeNonterminal))
-                throw new FormatException(
-                    $"Rule {rule} expecting one of {{{string.Join(", ", rule.First)}}}, but got {lookahead}");
+            {
+                new PrettyException(FileInformation, lookahead.SourceRange,
+                        $"Rule {rule} expecting one of {{{string.Join(", ", rule.First)}}}, but got {lookahead}")
+                    .AddToExceptions();
+                if (rule.Follow.Contains(lookahead.TokenType)) return false;
+                _stack.Push(rule);
+                return true;
+            }
 
 
             Debug.Assert(compositeNonterminal != null, nameof(compositeNonterminal) + " != null");
@@ -58,7 +70,13 @@ public class LL1Parser
 
     public void Feed(Token token)
     {
-        while (!Process(token)) DumpStates();
+        bool resE;
+        do
+        {
+            resE = Process(token);
+            Console.WriteLine($"Res: {resE}");
+            DumpStates();
+        } while (!resE);
     }
 
     public void DumpStates()

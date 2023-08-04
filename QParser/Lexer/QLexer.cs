@@ -43,17 +43,18 @@ public class QLexer : IEnumerable<Token>
     };
 
     private readonly RootState _rootState;
-    private readonly StreamReader _stream;
+    private readonly SourceInputStream _stream;
     private readonly StringBuilder _stringBuilder = new();
     private CharPosition _charPosition;
+    private CharPosition _currentCharPosition;
     private State _currentState;
     private char _lookaheadChar;
     private bool _reserveOneChar;
 
-    public QLexer(Stream stream, string filePath)
+    public QLexer(SourceInputStream sourceInputStream, FileInformation fileInformation)
     {
-        _stream = new StreamReader(stream, Encoding.UTF8);
-        _charPosition = new CharPosition(0, 0, filePath);
+        _stream = sourceInputStream;
+        _charPosition = new CharPosition(0, 0, fileInformation);
         _currentState = _rootState = new RootState(null);
         _indentStack.Push(0);
         RegisterPlainSymbols();
@@ -109,8 +110,14 @@ public class QLexer : IEnumerable<Token>
             return _lookaheadChar;
         }
 
-        if (_stream.EndOfStream) return _lookaheadChar = '\0';
+        if (_stream.EndOfStream)
+        {
+            if (_lookaheadChar != '\0') _stream.FinishLineRecording();
+            return _lookaheadChar = '\0';
+        }
+
         _lookaheadChar = (char)_stream.Read();
+        _currentCharPosition = _charPosition;
         _charPosition.Feed(_lookaheadChar);
         return _lookaheadChar;
     }
@@ -129,9 +136,17 @@ public class QLexer : IEnumerable<Token>
         var accept = false;
         var ignore = false;
         var startPos = _charPosition;
+        var firstTime = true;
+        var lastPos = _charPosition;
         while (!accept)
         {
             var c = NextChar();
+            if (firstTime)
+            {
+                startPos = _currentCharPosition;
+                firstTime = false;
+            }
+
             if (SpaceState.CheckAll(c))
             {
                 if (_currentState.OfferTerminate())
@@ -163,7 +178,7 @@ public class QLexer : IEnumerable<Token>
             if (transition.State != null) _currentState = transition.State;
             if (transition.Flag.HasFlag(StateTransitionFlag.Error))
                 throw new FormatException(
-                    $"Unrecognized token: \"{_stringBuilder}\" at {_charPosition.ToStringWithFile()}");
+                    $"Unrecognized token: \"{_stringBuilder}\" at {_currentCharPosition.ToStringWithFile()}");
 
             if (consume)
             {
@@ -173,15 +188,17 @@ public class QLexer : IEnumerable<Token>
             {
                 ReserveOneChar();
             }
+
+            lastPos = _currentCharPosition;
         }
 
         var str = _stringBuilder.ToString();
         var token = _currentState.Accept(str);
-        token.Start = startPos;
-        token.End = _charPosition;
+        token.SourceRange.Start = startPos;
+        token.SourceRange.End = lastPos;
         token.Ignore = ignore;
         // Transform into indent or dedent for space tokens
-        if (token.Start.Column != 0 || _currentState is not SpaceState { CanBeIndent: true }) return token;
+        if (token.SourceRange.Start.Column != 0 || _currentState is not SpaceState { CanBeIndent: true }) return token;
         if (token.Content.Length > _indentStack.Peek())
         {
             token.TokenType = TokenType.Indent;
@@ -196,5 +213,10 @@ public class QLexer : IEnumerable<Token>
         }
 
         return token;
+    }
+
+    public void Close()
+    {
+        _stream.Close();
     }
 }

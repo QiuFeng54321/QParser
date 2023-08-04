@@ -112,6 +112,7 @@ public class LexerTests
     private readonly TokenType[] _expectedTokenTypes;
     private readonly string[] _expectedTokenContents;
     private readonly string _name;
+    private readonly FileInformation _fileInformation;
 
 
     public LexerTests(string name, string[] expectedContents, TokenType[] expectedTokenTypes)
@@ -120,7 +121,10 @@ public class LexerTests
         _expectedTokenTypes = expectedTokenTypes;
         _name = name;
         _contents = string.Join("", _expectedTokenContents);
-        _lexer = new QLexer(new MemoryStream(Encoding.UTF8.GetBytes(_contents)), "TestFile");
+        _fileInformation = new FileInformation("TestFile");
+        var stream = new SourceInputStream(_fileInformation,
+            new MemoryStream(Encoding.UTF8.GetBytes(_contents)));
+        _lexer = new QLexer(stream, _fileInformation);
     }
 
     [Test]

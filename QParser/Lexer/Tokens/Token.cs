@@ -5,8 +5,8 @@ namespace QParser.Lexer.Tokens;
 public class Token
 {
     public readonly string Content;
+    public readonly SourceRange SourceRange = new(new CharPosition(), new CharPosition());
     public bool Ignore;
-    public CharPosition Start, End;
     public TokenType TokenType;
 
     public Token(TokenType tokenType, string content)
@@ -17,6 +17,6 @@ public class Token
 
     public override string ToString()
     {
-        return $"[{TokenType} '{Regex.Escape(Content)}' ({Start} ~ {End})]{(Ignore ? "?" : "")}";
+        return $"[{TokenType} '{Regex.Escape(Content)}' ({SourceRange})]{(Ignore ? "?" : "")}";
     }
 }
