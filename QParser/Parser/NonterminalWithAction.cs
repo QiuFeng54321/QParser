@@ -14,6 +14,11 @@ public class NonterminalWithAction : Nonterminal
     {
     }
 
+    public override bool GenerateNonKernelItems()
+    {
+        return false;
+    }
+
     protected override void InternalGenerateCanBeEmpty()
     {
     }

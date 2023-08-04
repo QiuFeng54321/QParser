@@ -59,6 +59,18 @@ public class CompositeNonterminal : Nonterminal
         }
     }
 
+    public override bool GenerateNonKernelItems()
+    {
+        var prevLen = NonKernelItems.Count;
+        foreach (var component in Components)
+        {
+            NonKernelItems.UnionWith(component.NonKernelItems);
+            if (!CanBeEmpty) break;
+        }
+
+        return prevLen != NonKernelItems.Count;
+    }
+
     protected override void InternalGenerateCanBeEmpty()
     {
         foreach (var component in Components)

@@ -14,6 +14,7 @@ public abstract class Nonterminal
     protected bool FirstGeneratorGenerated;
 
     public string Name = "?";
+    public HashSet<ClosureItem> NonKernelItems = new();
 
     protected Nonterminal(Grammar grammar)
     {
@@ -21,6 +22,12 @@ public abstract class Nonterminal
     }
 
     protected abstract void InternalGenerateFirstGenerator();
+
+    /// <summary>
+    ///     Generates CLOSURE(item), where item is this nonterminal whose dot index is 0
+    /// </summary>
+    /// <returns>If CLOSURE has changed</returns>
+    public abstract bool GenerateNonKernelItems();
 
     public void GenerateFirstGenerator()
     {

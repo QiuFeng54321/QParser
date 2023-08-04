@@ -30,6 +30,18 @@ public class Rule : Nonterminal
         }
     }
 
+    public override bool GenerateNonKernelItems()
+    {
+        var prevLen = NonKernelItems.Count;
+        foreach (var subRule in SubRules)
+        {
+            NonKernelItems.Add(new ClosureItem(this, subRule, 0));
+            NonKernelItems.UnionWith(subRule.NonKernelItems);
+        }
+
+        return prevLen != NonKernelItems.Count;
+    }
+
     protected override void InternalGenerateCanBeEmpty()
     {
         foreach (var subRule in SubRules) subRule.GenerateCanBeEmpty();

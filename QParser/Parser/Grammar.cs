@@ -11,6 +11,7 @@ public class Grammar
     public readonly HashSet<Rule> Rules = new();
     public bool FirstGenerated;
     public bool FollowGenerated;
+    public bool NonKernelItemsGenerated;
 
     public Grammar()
     {
@@ -105,6 +106,21 @@ public class Grammar
         }
 
         FollowGenerated = true;
+    }
+
+    public void GenerateNonKernelItems()
+    {
+        if (NonKernelItemsGenerated) return;
+        bool changed;
+        do
+        {
+            changed = false;
+            foreach (var rule in Rules)
+            foreach (var subRule in rule.SubRules)
+                changed |= subRule.GenerateNonKernelItems();
+        } while (changed);
+
+        NonKernelItemsGenerated = true;
     }
 
     public Result CanBeLL1()

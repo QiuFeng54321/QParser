@@ -20,6 +20,11 @@ public class TokenTerminal : Nonterminal
     {
     }
 
+    public override bool GenerateNonKernelItems()
+    {
+        return false;
+    }
+
     protected override void InternalGenerateCanBeEmpty()
     {
     }
