@@ -5,10 +5,11 @@ public class ClosureTable
     private readonly Dictionary<HashSet<ClosureItem>, Closure>
         _closures = new(HashSet<ClosureItem>.CreateSetComparer());
 
-    private readonly Dictionary<(int id, Nonterminal nonterminal), Closure> _gotoTable = new();
-
     private readonly Dictionary<int, Closure> _idClosures = new();
     private readonly Closure _startingClosure;
+    public readonly HashSet<(int id, Rule rule, CompositeNonterminal production)> FinishedItems = new();
+
+    public readonly Dictionary<(int id, Nonterminal symbol), Closure> GotoTable = new();
     private int _currentId;
 
     public ClosureTable(Rule startingRule)
@@ -70,7 +71,12 @@ public class ClosureTable
         // call AddKernelItem
         foreach (var item in closure.Kernels.Concat(closure.NonKernels))
         {
-            if (item.AfterDot is null) continue;
+            if (item.AfterDot is null)
+            {
+                FinishedItems.Add((closure.Id, item.Rule, item.Production));
+                continue;
+            }
+
             var newItem = item with { Index = item.Index + 1 };
             if (!itemsToAdd.ContainsKey(item.AfterDot)) itemsToAdd.Add(item.AfterDot, new HashSet<ClosureItem>());
 
@@ -80,7 +86,7 @@ public class ClosureTable
         foreach (var (nonterminal, items) in itemsToAdd)
         {
             AddKernelItem(items, out var newClosure, out var closureNew);
-            _gotoTable[(closure.Id, nonterminal)] = newClosure;
+            GotoTable[(closure.Id, nonterminal)] = newClosure;
             if (closureNew) GenerateGoto(newClosure);
         }
     }
@@ -93,7 +99,7 @@ public class ClosureTable
             Console.WriteLine(closure);
         }
 
-        foreach (var ((id, nonterminal), closure) in _gotoTable)
+        foreach (var ((id, nonterminal), closure) in GotoTable)
             Console.WriteLine($"GOTO(I{id}, {nonterminal}) = {closure.Id}");
     }
 }

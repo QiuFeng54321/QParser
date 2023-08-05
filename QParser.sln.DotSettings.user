@@ -2,5 +2,8 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2ec24ed6_002D6d59_002D4bb0_002Dbcf0_002Df19b847d0a27/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;QParser.Test&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Project Location="/Users/mac/RiderProjects/QParser/QParser.Test" Presentation="&amp;lt;QParser.Test&amp;gt;" /&gt;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=464872fe_002Da0b1_002D467f_002Da026_002D58cbb7709528/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from &amp;lt;QParser.Test&amp;gt; #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Project Location="/Users/mac/RiderProjects/QParser/QParser.Test" Presentation="&amp;lt;QParser.Test&amp;gt;" /&gt;
+&lt;/SessionState&gt;</s:String>
 	
 	</wpf:ResourceDictionary>

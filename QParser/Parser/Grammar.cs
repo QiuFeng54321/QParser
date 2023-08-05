@@ -9,6 +9,7 @@ public class Grammar
     public readonly CompositeNonterminal Epsilon, Eof;
     public readonly LL1ParseTable LL1ParseTable = new();
     public readonly HashSet<Rule> Rules = new();
+    public bool CanBeEmptyGenerated;
     public bool FirstGenerated;
     public bool FollowGenerated;
     public bool NonKernelItemsGenerated;
@@ -28,17 +29,21 @@ public class Grammar
 
     public void GenerateCanBeEmpty()
     {
+        if (CanBeEmptyGenerated) return;
         var changed = true;
         while (changed)
         {
             changed = false;
             foreach (var rule in Rules) changed |= rule.GenerateCanBeEmpty();
         }
+
+        CanBeEmptyGenerated = true;
     }
 
     public void GenerateFirst()
     {
         if (FirstGenerated) return;
+        GenerateCanBeEmpty();
         var changed = true;
         foreach (var rule in Rules) rule.GenerateFirstGenerator();
 
@@ -91,7 +96,8 @@ public class Grammar
     public void GenerateFollow()
     {
         if (FollowGenerated) return;
-        EntryRule?.Follow.Add(TokenType.Eof);
+        GenerateFirst();
+        // EntryRule?.Follow.Add(TokenType.Eof);
         GenerateFollowGenerator();
         var changed = true;
         while (changed)
@@ -111,6 +117,7 @@ public class Grammar
     public void GenerateNonKernelItems()
     {
         if (NonKernelItemsGenerated) return;
+        GenerateFollow();
         bool changed;
         do
         {
@@ -179,5 +186,13 @@ public class Grammar
         foreach (var rule in Rules) rule.Format(sb, withFirst, withFollow);
 
         return sb.ToString();
+    }
+
+    public void GenerateAll()
+    {
+        GenerateCanBeEmpty();
+        GenerateFirst();
+        GenerateFollow();
+        GenerateNonKernelItems();
     }
 }

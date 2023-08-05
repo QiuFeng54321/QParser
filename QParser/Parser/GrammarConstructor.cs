@@ -28,5 +28,6 @@ public abstract class GrammarConstructor
     protected void SetEntry(Rule rule)
     {
         Grammar.EntryRule = R("$ENTRY", C(rule, T(TokenType.Eof)));
+        Grammar.AddRule(Grammar.EntryRule);
     }
 }
