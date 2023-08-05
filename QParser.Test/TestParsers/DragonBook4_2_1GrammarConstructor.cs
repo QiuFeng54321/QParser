@@ -13,9 +13,8 @@ public class DragonBook4_2_1GrammarConstructor : GrammarConstructor
     /// </summary>
     public override void Construct()
     {
-        var program = Entry(R("Program"));
         var s = R("S");
-        program.Add(s);
+        SetEntry(s);
         s.Add(s, s, T(TokenType.Plus))
             .Add(s, s, T(TokenType.Multiply))
             .Add(T(TokenType.Integer));

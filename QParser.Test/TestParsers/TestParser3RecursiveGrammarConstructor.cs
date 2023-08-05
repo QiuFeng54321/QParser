@@ -18,11 +18,10 @@ public class TestParser3RecursiveGrammarConstructor : GrammarConstructor
     /// </summary>
     public override void Construct()
     {
-        var program = Entry(R("Program"));
         var a = R("A");
         var b = R("B");
         var c = R("C");
-        program.Add(a);
+        SetEntry(a);
         a.Add(a, b)
             .Add(b, a)
             .Add(T(TokenType.Identifier));

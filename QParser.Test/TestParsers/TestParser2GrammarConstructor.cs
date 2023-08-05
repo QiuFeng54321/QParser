@@ -18,13 +18,12 @@ public class TestParser2GrammarConstructor : GrammarConstructor
     /// </summary>
     public override void Construct()
     {
-        var program = Entry(R("Program"));
         var mult = R("Mult");
         var mult2 = R("Mult2");
         var add = R("Addition");
         var add2 = R("Addition2");
         var e = R("E");
-        program.Add(add);
+        SetEntry(add);
         add.Add(mult, add2);
         add2.Add(T(TokenType.Plus), mult, add2)
             .Add(Epsilon);

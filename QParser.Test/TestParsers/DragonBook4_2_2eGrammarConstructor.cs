@@ -12,10 +12,9 @@ public class DragonBook4_2_2eGrammarConstructor : GrammarConstructor
     /// </summary>
     public override void Construct()
     {
-        var program = Entry(R("Program"));
         var s = R("S");
         var l = R("L");
-        program.Add(s);
+        SetEntry(s);
         s.Add(T(TokenType.OpenParen), l, T(TokenType.CloseParen))
             .Add(T(TokenType.Integer));
         l.Add(l, T(TokenType.Comma), s)

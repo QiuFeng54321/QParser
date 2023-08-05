@@ -25,8 +25,8 @@ public abstract class GrammarConstructor
         return rule;
     }
 
-    protected Rule Entry(Rule rule)
+    protected void SetEntry(Rule rule)
     {
-        return Grammar.EntryRule = rule;
+        Grammar.EntryRule = R("$ENTRY", C(rule, T(TokenType.Eof)));
     }
 }

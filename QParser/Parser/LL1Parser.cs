@@ -16,7 +16,6 @@ public class LL1Parser
     {
         _grammar = grammar;
         FileInformation = fileInformation;
-        _stack.Push(_grammar.Eof.SingleToken);
         _stack.Push(_grammar.EntryRule ?? throw new InvalidOperationException("Undefined entry rule for grammar"));
         var genRes = _parseTable.GenerateFromGrammar(_grammar);
         genRes.HasError(err => throw new FormatException(err.ToString()));

@@ -7,10 +7,9 @@ public class TestParser1GrammarConstructor : GrammarConstructor
 {
     public override void Construct()
     {
-        var decl = R( "Declare Statement",
+        var decl = R("Declare Statement",
             C(T(TokenType.Declare), T(TokenType.Identifier), T(TokenType.Colon), T(TokenType.Identifier))
-            );
-        Entry(decl);
-
+        );
+        SetEntry(decl);
     }
 }
