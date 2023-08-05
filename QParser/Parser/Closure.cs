@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace QParser.Parser;
 
 public class Closure
@@ -17,9 +19,22 @@ public class Closure
         Expand(item);
     }
 
-    public void Expand(ClosureItem item)
+    public bool Expand(ClosureItem item)
     {
+        var prevLen = Items.Count;
         Items.Add(item);
         if (item.AfterDot is { } afterDot) Items.UnionWith(afterDot.NonKernelItems);
+        return prevLen != Items.Count;
+    }
+
+    public override string ToString()
+    {
+        StringBuilder sb = new();
+        sb.AppendLine($"Closure {Id}:");
+        foreach (var item in Items)
+            sb.Append("    ")
+                .AppendLine(item.ToString());
+
+        return sb.ToString();
     }
 }

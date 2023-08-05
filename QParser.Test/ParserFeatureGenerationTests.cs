@@ -42,7 +42,7 @@ public class ParserFeatureGenerationTests
     public void OutputGrammar()
     {
         Console.WriteLine("Original ------------------------------");
-        Console.WriteLine(_grammarConstructor.Grammar);
+        Console.WriteLine(_grammarConstructor.Grammar.ToString(false, false));
     }
 
     [Test]
@@ -55,5 +55,30 @@ public class ParserFeatureGenerationTests
         Console.WriteLine("Follow ------------------------------");
         _grammarConstructor.Grammar.GenerateFollow();
         Console.WriteLine(_grammarConstructor.Grammar.ToString(false, true));
+    }
+
+    [Test]
+    public void GenerateNonKernelItems()
+    {
+        _grammarConstructor.Grammar.GenerateFirst();
+        _grammarConstructor.Grammar.GenerateFollow();
+        _grammarConstructor.Grammar.GenerateNonKernelItems();
+        foreach (var rule in _grammarConstructor.Grammar.Rules)
+        {
+            Console.WriteLine($"Non-kernel item for {rule}: ");
+            foreach (var nonKernelItem in rule.NonKernelItems) Console.WriteLine(nonKernelItem);
+        }
+    }
+
+    [Test]
+    public void GenerateClosures()
+    {
+        if (_grammarConstructor.Grammar.EntryRule == null) Assert.Pass();
+        _grammarConstructor.Grammar.GenerateFirst();
+        _grammarConstructor.Grammar.GenerateFollow();
+        _grammarConstructor.Grammar.GenerateNonKernelItems();
+        var closureTable = new ClosureTable(_grammarConstructor.Grammar.EntryRule);
+        closureTable.Generate();
+        closureTable.Dump();
     }
 }

@@ -116,8 +116,11 @@ public class Grammar
         {
             changed = false;
             foreach (var rule in Rules)
-            foreach (var subRule in rule.SubRules)
-                changed |= subRule.GenerateNonKernelItems();
+            {
+                changed |= rule.GenerateNonKernelItems();
+                foreach (var subRule in rule.SubRules)
+                    changed |= subRule.GenerateNonKernelItems();
+            }
         } while (changed);
 
         NonKernelItemsGenerated = true;
