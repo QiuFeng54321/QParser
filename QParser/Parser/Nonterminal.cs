@@ -9,12 +9,12 @@ public abstract class Nonterminal
     public readonly HashSet<TokenType> Follow = new();
     public readonly HashSet<Nonterminal> FollowGenerator = new();
     protected readonly Grammar Grammar;
+    public readonly HashSet<ClosureItem> NonKernelItems = new();
     public bool CanBeEmpty;
     public bool CanBeEmptyGenerated;
     protected bool FirstGeneratorGenerated;
 
     public string Name = "?";
-    public HashSet<ClosureItem> NonKernelItems = new();
 
     protected Nonterminal(Grammar grammar)
     {

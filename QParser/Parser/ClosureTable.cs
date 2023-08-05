@@ -2,60 +2,79 @@ namespace QParser.Parser;
 
 public class ClosureTable
 {
-    public readonly Dictionary<Nonterminal, Closure> ClosureAfter = new();
-    public readonly Dictionary<ClosureItem, Closure> Closures = new();
-    public readonly Closure StartingClosure;
+    private readonly Dictionary<Nonterminal, Closure> _closureAfter = new();
+    private readonly Dictionary<ClosureItem, Closure> _closures = new();
+    private readonly Closure _startingClosure;
     private int _currentId;
 
     public ClosureTable(Rule startingRule)
     {
         var startingClosureItem = new ClosureItem(startingRule, startingRule.SubRules.First(), 0);
-        StartingClosure = new Closure(NewId, startingClosureItem);
+        _startingClosure = new Closure(NewId, startingClosureItem);
         AddKernelItem(startingClosureItem, out _, out _, out _);
     }
 
-    public int NewId => _currentId++;
+    private int NewId => _currentId++;
 
-    public void AddKernelItem(ClosureItem item, out Closure closure, out bool isClosureNew, out bool closureChanged)
+    /// <summary>
+    ///     Adds an item to the closure table.
+    ///     This item will be considered kernel, which means the (non-)terminal before the dot of this item
+    ///     will be used as an index to the closure.
+    ///     If the item cannot be put in any existing closures, a new closure will be created.
+    /// </summary>
+    /// <param name="item">The item to be added</param>
+    /// <param name="closure">The closure which the item is put in</param>
+    /// <param name="isClosureNew">Indicates if the closure was created after this call</param>
+    /// <param name="closureChanged">Indicates if the items of the closure has changed</param>
+    private void AddKernelItem(ClosureItem item, out Closure closure, out bool isClosureNew, out bool closureChanged)
     {
         isClosureNew = false;
         closureChanged = false;
         if (item.BeforeDot == null)
         {
-            Closures[item] = StartingClosure;
-            closure = StartingClosure;
+            _closures[item] = _startingClosure;
+            closure = _startingClosure;
             return;
         }
 
-        if (Closures.TryGetValue(item, out var foundClosure))
+        if (_closures.TryGetValue(item, out var foundClosure))
         {
             closure = foundClosure;
             return;
         }
 
-        if (!ClosureAfter.ContainsKey(item.BeforeDot))
+        if (!_closureAfter.ContainsKey(item.BeforeDot))
         {
             closure = new Closure(NewId, item);
-            ClosureAfter[item.BeforeDot] = closure;
-            Closures[item] = closure;
+            _closureAfter[item.BeforeDot] = closure;
+            _closures[item] = closure;
             isClosureNew = true;
             closureChanged = true;
             return;
         }
 
-        closure = ClosureAfter[item.BeforeDot];
+        closure = _closureAfter[item.BeforeDot];
         closureChanged = closure.Expand(item);
     }
 
+    /// <summary>
+    ///     Generates the full closure table, containing CLOSURE and GOTO
+    /// </summary>
     public void Generate()
     {
-        GenerateGoto(StartingClosure);
+        GenerateGoto(_startingClosure);
     }
 
-    public void GenerateGoto(Closure closure)
+    /// <summary>
+    ///     Advances each item in the closure by 1 index, and generates GOTO(item)
+    /// </summary>
+    /// <param name="closure">The closure containing the items to generate GOTO for</param>
+    private void GenerateGoto(Closure closure)
     {
         HashSet<Closure> newClosures = new();
         HashSet<ClosureItem> itemsToAdd = new();
+        // We have to separately maintain a list to add, because closure items can change when we
+        // call AddKernelItem
         foreach (var item in closure.Items)
         {
             if (item.AfterDot is null) continue;
@@ -74,7 +93,7 @@ public class ClosureTable
 
     public void Dump()
     {
-        foreach (var (nonterminal, closure) in ClosureAfter)
+        foreach (var (nonterminal, closure) in _closureAfter)
         {
             Console.Write($"After {nonterminal}: ");
             Console.WriteLine(closure);
