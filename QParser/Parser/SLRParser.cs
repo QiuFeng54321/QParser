@@ -23,7 +23,7 @@ public class SLRParser
         foreach (var ((id, symbol), closure) in _closureTable.GotoTable)
             if (symbol is TokenTerminal tokenTerminal)
             {
-                if (tokenTerminal.TokenType is TokenType.Eof && symbol == _grammar.EntryRule)
+                if (tokenTerminal.TokenType is TokenType.Eof)
                     _actionTable[(id, TokenType.Eof)] = new LRAction();
                 else if (!_actionTable.TryAdd((id, tokenTerminal.TokenType), new LRAction(closure.Id))) isSLR1 = false;
             }
