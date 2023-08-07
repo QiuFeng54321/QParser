@@ -16,6 +16,7 @@ public class ParserFeatureGenerationTestsFixtureData
             yield return new TestFixtureData(() => new DragonBook4_2_1GrammarConstructor());
             yield return new TestFixtureData(() => new DragonBook4_2_2eGrammarConstructor());
             yield return new TestFixtureData(() => new DragonBook4_2_2fGrammarConstructor());
+            yield return new TestFixtureData(() => new DragonBookEg0455GrammarConstructor());
         }
     }
 }
@@ -72,11 +73,21 @@ public class ParserFeatureGenerationTests
     }
 
     [Test]
-    public void GenerateClosures()
+    public void GenerateLR0Closures()
     {
         if (_grammar.EntryRule == null) Assert.Pass();
         _grammar.GenerateNonKernelItems();
-        var closureTable = new ClosureTable(_grammar.EntryRule);
+        var closureTable = new LR0ClosureTable(_grammar.EntryRule);
+        closureTable.Generate();
+        closureTable.Dump();
+    }
+
+    [Test]
+    public void GenerateLR1Closures()
+    {
+        if (_grammar.EntryRule == null) Assert.Pass();
+        _grammar.GenerateNonKernelItems();
+        var closureTable = new LR1ClosureTable(_grammar.EntryRule);
         closureTable.Generate();
         closureTable.Dump();
     }
@@ -90,5 +101,16 @@ public class ParserFeatureGenerationTests
         var isSLR = parser.GenerateTables();
         parser.Dump();
         Console.WriteLine($"Is SLR: {isSLR}");
+    }
+
+    [Test]
+    public void GenerateLRParser()
+    {
+        if (_grammar.EntryRule == null) Assert.Pass();
+        _grammar.GenerateAll();
+        var parser = new LRParser(_grammar);
+        var isLR = parser.GenerateTables();
+        parser.Dump();
+        Console.WriteLine($"Is LR: {isLR}");
     }
 }

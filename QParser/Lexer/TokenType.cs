@@ -2,6 +2,7 @@ namespace QParser.Lexer;
 
 public enum TokenType
 {
+    Unknown,
     Identifier,
     Integer,
     Real,
@@ -38,6 +39,5 @@ public enum TokenType
     CloseBrace,
     Eof,
     Space,
-    Unknown,
     Epsilon
 }

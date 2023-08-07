@@ -2,40 +2,39 @@ using QParser.Lexer;
 
 namespace QParser.Parser;
 
-public class SLRParser
+public class LRParser
 {
     private readonly Dictionary<(int state, TokenType tokenType), LRAction> _actionTable = new();
-    private readonly LR0ClosureTable _closureTable;
+    private readonly LR1ClosureTable _closureTable;
     private readonly Dictionary<(int state, Rule rule), LRAction> _gotoTable = new();
 
-    public SLRParser(Grammar grammar)
+    public LRParser(Grammar grammar)
     {
         grammar.GenerateAll();
-        _closureTable = new LR0ClosureTable(grammar.EntryRule ?? throw new InvalidOperationException());
+        _closureTable = new LR1ClosureTable(grammar.EntryRule ?? throw new InvalidOperationException());
     }
 
     public bool GenerateTables()
     {
         _closureTable.Generate();
-        var isSLR1 = true;
+        var isLR1 = true;
         foreach (var ((id, symbol), closure) in _closureTable.GotoTable)
             if (symbol is TokenTerminal tokenTerminal)
             {
                 if (tokenTerminal.TokenType is TokenType.Eof)
                     _actionTable[(id, TokenType.Eof)] = new LRAction();
-                else if (!_actionTable.TryAdd((id, tokenTerminal.TokenType), new LRAction(closure.Id))) isSLR1 = false;
+                else if (!_actionTable.TryAdd((id, tokenTerminal.TokenType), new LRAction(closure.Id))) isLR1 = false;
             }
             else if (symbol is Rule rule)
             {
-                if (!_gotoTable.TryAdd((id, rule), new LRAction(closure.Id))) isSLR1 = false;
+                if (!_gotoTable.TryAdd((id, rule), new LRAction(closure.Id))) isLR1 = false;
             }
 
-        foreach (var (id, (rule, production, _, _)) in _closureTable.FinishedItems)
-        foreach (var followToken in rule.Follow)
-            if (!_actionTable.TryAdd((id, followToken), new LRAction(rule, production)))
-                isSLR1 = false;
+        foreach (var (id, item) in _closureTable.FinishedItems)
+            if (!_actionTable.TryAdd((id, item.Lookahead), new LRAction(item.Rule, item.Production)))
+                isLR1 = false;
 
-        return isSLR1;
+        return isLR1;
     }
 
     public void Dump()

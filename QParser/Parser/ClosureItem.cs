@@ -1,11 +1,29 @@
 using System.Text;
+using QParser.Lexer;
 
 namespace QParser.Parser;
 
-public record ClosureItem(Rule Rule, CompositeNonterminal Production, int Index)
+public record ClosureItem(Rule Rule, CompositeNonterminal Production, int Index,
+    TokenType Lookahead = TokenType.Unknown)
 {
     public Nonterminal? AfterDot => Index >= Production.Components.Length ? null : Production.Components[Index];
     public Nonterminal? BeforeDot => Index == 0 ? null : Production.Components[Index - 1];
+
+    public bool IsLR1 => Lookahead is not TokenType.Unknown;
+
+    public HashSet<TokenType> FirstAfterAfterDot()
+    {
+        if (Index + 1 >= Production.Components.Length) return new HashSet<TokenType> { Lookahead };
+        var first = new HashSet<TokenType>();
+        for (var i = Index + 1; i < Production.Components.Length; i++)
+        {
+            first.UnionWith(Production.Components[i].First);
+            if (!Production.Components[i].CanBeEmpty) break;
+            if (i + 1 == Production.Components.Length && IsLR1) first.Add(Lookahead);
+        }
+
+        return first;
+    }
 
     public override string ToString()
     {
@@ -19,6 +37,21 @@ public record ClosureItem(Rule Rule, CompositeNonterminal Production, int Index)
         }
 
         if (Index == Production.Components.Length) sb.Append(" .");
+        if (IsLR1)
+        {
+            sb.Append(" {");
+            sb.Append(string.Join(", ", Lookahead));
+            sb.Append('}');
+        }
+
         return sb.ToString();
+    }
+
+    public void Deconstruct(out Rule rule, out CompositeNonterminal production, out int index, out TokenType lookahead)
+    {
+        rule = Rule;
+        production = Production;
+        index = Index;
+        lookahead = Lookahead;
     }
 }
