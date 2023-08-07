@@ -97,9 +97,9 @@ public class ParserFeatureGenerationTests
     {
         if (_grammar.EntryRule == null) Assert.Pass();
         _grammar.GenerateAll();
-        var parser = new SLRParser(_grammar);
+        var parser = new SLRParser(_grammar, null!);
         var isSLR = parser.GenerateTables();
-        parser.Dump();
+        parser.DumpTables();
         Console.WriteLine($"Is SLR: {isSLR}");
     }
 
@@ -108,9 +108,9 @@ public class ParserFeatureGenerationTests
     {
         if (_grammar.EntryRule == null) Assert.Pass();
         _grammar.GenerateAll();
-        var parser = new LRParser(_grammar);
+        var parser = new LRParser(_grammar, null!);
         var isLR = parser.GenerateTables();
-        parser.Dump();
+        parser.DumpTables();
         Console.WriteLine($"Is LR: {isLR}");
     }
 }

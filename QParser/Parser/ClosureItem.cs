@@ -11,6 +11,9 @@ public record ClosureItem(Rule Rule, CompositeNonterminal Production, int Index,
 
     public bool IsLR1 => Lookahead is not TokenType.Unknown;
 
+    public static IEqualityComparer<ClosureItem> LookaheadIrrelevantComparer { get; } =
+        new LookaheadIrrelevantEqualityComparer();
+
     public HashSet<TokenType> FirstAfterAfterDot()
     {
         if (Index + 1 >= Production.Components.Length) return new HashSet<TokenType> { Lookahead };
@@ -53,5 +56,22 @@ public record ClosureItem(Rule Rule, CompositeNonterminal Production, int Index,
         production = Production;
         index = Index;
         lookahead = Lookahead;
+    }
+
+    private sealed class LookaheadIrrelevantEqualityComparer : IEqualityComparer<ClosureItem>
+    {
+        public bool Equals(ClosureItem x, ClosureItem y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, null)) return false;
+            if (ReferenceEquals(y, null)) return false;
+            if (x.GetType() != y.GetType()) return false;
+            return x.Rule.Equals(y.Rule) && x.Production.Equals(y.Production) && x.Index == y.Index;
+        }
+
+        public int GetHashCode(ClosureItem obj)
+        {
+            return HashCode.Combine(obj.Rule, obj.Production, obj.Index);
+        }
     }
 }

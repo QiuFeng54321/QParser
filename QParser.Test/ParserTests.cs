@@ -64,7 +64,8 @@ public class ParserTests
         var canBeLL1 = _grammar.CanBeLL1();
         if (canBeLL1.IsFailed) Assert.Pass();
         var parser = new LL1Parser(_grammar, _fileInformation);
-        parser.DumpTable();
+        parser.Generate();
+        parser.DumpTables();
 
         foreach (var token in _qLexer)
         {

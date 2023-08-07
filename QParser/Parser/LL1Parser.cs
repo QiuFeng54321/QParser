@@ -4,24 +4,20 @@ using QParser.Lexer.Tokens;
 
 namespace QParser.Parser;
 
-public class LL1Parser
+public class LL1Parser : QParser
 {
-    private readonly Grammar _grammar;
     private readonly List<Token> _matched = new();
     private readonly LL1ParseTable _parseTable = new();
     private readonly Stack<Nonterminal> _stack = new();
-    private readonly FileInformation FileInformation;
 
-    public LL1Parser(Grammar grammar, FileInformation fileInformation)
+    public LL1Parser(Grammar grammar, FileInformation fileInformation) : base(grammar, fileInformation)
     {
-        _grammar = grammar;
         FileInformation = fileInformation;
-        _stack.Push(_grammar.EntryRule ?? throw new InvalidOperationException("Undefined entry rule for grammar"));
-        var genRes = _parseTable.GenerateFromGrammar(_grammar);
-        genRes.HasError(err => throw new FormatException(err.ToString()));
+        _stack.Push(Grammar.EntryRule ?? throw new InvalidOperationException("Undefined entry rule for grammar"));
     }
 
-    public bool Accepted => _stack.Count == 0;
+    public override bool Accepted => _stack.Count == 0;
+    public override bool IsParserValid { get; protected set; }
 
     /// <summary>
     /// </summary>
@@ -67,7 +63,13 @@ public class LL1Parser
         throw new InvalidOperationException($"Unexpected top of stack: {next}, current lookahead {lookahead}");
     }
 
-    public void Feed(Token token)
+    public override void Generate()
+    {
+        var genRes = _parseTable.GenerateFromGrammar(Grammar);
+        genRes.HasError(err => IsParserValid = false);
+    }
+
+    public override void Feed(Token token)
     {
         bool resE;
         do
@@ -78,13 +80,13 @@ public class LL1Parser
         } while (!resE);
     }
 
-    public void DumpStates()
+    public override void DumpStates()
     {
         Console.WriteLine($"Matched: {{{string.Join(", ", _matched)}}}");
         Console.WriteLine($"Stack: {{{string.Join(", ", _stack)}}}");
     }
 
-    public void DumpTable()
+    public override void DumpTables()
     {
         foreach (var (rule, token, compositeRule) in _parseTable)
             Console.WriteLine($"M[{rule}, {token}] = {compositeRule}");

@@ -1,18 +1,22 @@
 using QParser.Lexer;
+using QParser.Lexer.Tokens;
 
 namespace QParser.Parser;
 
-public class SLRParser
+public class SLRParser : QParser
 {
     private readonly Dictionary<(int state, TokenType tokenType), LRAction> _actionTable = new();
     private readonly LR0ClosureTable _closureTable;
     private readonly Dictionary<(int state, Rule rule), LRAction> _gotoTable = new();
 
-    public SLRParser(Grammar grammar)
+    public SLRParser(Grammar grammar, FileInformation fileInformation) : base(grammar, fileInformation)
     {
         grammar.GenerateAll();
         _closureTable = new LR0ClosureTable(grammar.EntryRule ?? throw new InvalidOperationException());
     }
+
+    public override bool Accepted { get; }
+    public override bool IsParserValid { get; protected set; }
 
     public bool GenerateTables()
     {
@@ -38,7 +42,22 @@ public class SLRParser
         return isSLR1;
     }
 
-    public void Dump()
+    public override void Generate()
+    {
+        IsParserValid = GenerateTables();
+    }
+
+    public override void Feed(Token token)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void DumpStates()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void DumpTables()
     {
         foreach (var ((state, tokenType), action) in _actionTable)
             Console.WriteLine($"Action {state}, {tokenType} -> {action}");
