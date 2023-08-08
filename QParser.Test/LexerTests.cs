@@ -24,15 +24,15 @@ public class LexerTestsFixtureData
                 "AAA"
             }, new[]
             {
-                TokenType.Declare,
-                TokenType.Space,
-                TokenType.Identifier,
-                TokenType.Space,
-                TokenType.As,
-                TokenType.GreaterThanOrEqualTo,
-                TokenType.Equal,
-                TokenType.NotEqual,
-                TokenType.Identifier
+                DefaultTokenType.Declare,
+                DefaultTokenType.Space,
+                DefaultTokenType.Identifier,
+                DefaultTokenType.Space,
+                DefaultTokenType.As,
+                DefaultTokenType.GreaterThanOrEqualTo,
+                DefaultTokenType.Equal,
+                DefaultTokenType.NotEqual,
+                DefaultTokenType.Identifier
             });
             yield return new TestFixtureData("Last char token", new[]
                 {
@@ -40,7 +40,7 @@ public class LexerTestsFixtureData
                 },
                 new[]
                 {
-                    TokenType.Identifier
+                    DefaultTokenType.Identifier
                 });
             yield return new TestFixtureData("Indent", new[]
             {
@@ -55,15 +55,15 @@ public class LexerTestsFixtureData
                 "  "
             }, new[]
             {
-                TokenType.Indent,
-                TokenType.Identifier,
-                TokenType.Space,
-                TokenType.Indent,
-                TokenType.Identifier,
-                TokenType.Space,
-                TokenType.Dedent,
-                TokenType.Identifier,
-                TokenType.Space
+                DefaultTokenType.Indent,
+                DefaultTokenType.Identifier,
+                DefaultTokenType.Space,
+                DefaultTokenType.Indent,
+                DefaultTokenType.Identifier,
+                DefaultTokenType.Space,
+                DefaultTokenType.Dedent,
+                DefaultTokenType.Identifier,
+                DefaultTokenType.Space
             });
             yield return new TestFixtureData("Numbers", new[]
                 {
@@ -81,17 +81,17 @@ public class LexerTestsFixtureData
                 },
                 new[]
                 {
-                    TokenType.Identifier,
-                    TokenType.Real,
-                    TokenType.Space,
-                    TokenType.Integer,
-                    TokenType.Identifier,
-                    TokenType.Space,
-                    TokenType.Real,
-                    TokenType.Dot,
-                    TokenType.Space,
-                    TokenType.Minus,
-                    TokenType.Real
+                    DefaultTokenType.Identifier,
+                    DefaultTokenType.Real,
+                    DefaultTokenType.Space,
+                    DefaultTokenType.Integer,
+                    DefaultTokenType.Identifier,
+                    DefaultTokenType.Space,
+                    DefaultTokenType.Real,
+                    DefaultTokenType.Dot,
+                    DefaultTokenType.Space,
+                    DefaultTokenType.Minus,
+                    DefaultTokenType.Real
                 });
         }
     }
@@ -109,13 +109,13 @@ public class LexerTests
     private readonly QLexer _lexer;
     private readonly List<Token> _tokens = new();
     private readonly string _contents;
-    private readonly TokenType[] _expectedTokenTypes;
+    private readonly DefaultTokenType[] _expectedTokenTypes;
     private readonly string[] _expectedTokenContents;
     private readonly string _name;
     private readonly FileInformation _fileInformation;
 
 
-    public LexerTests(string name, string[] expectedContents, TokenType[] expectedTokenTypes)
+    public LexerTests(string name, string[] expectedContents, DefaultTokenType[] expectedTokenTypes)
     {
         _expectedTokenContents = expectedContents;
         _expectedTokenTypes = expectedTokenTypes;
@@ -132,7 +132,7 @@ public class LexerTests
     {
         var token = _lexer.NextToken();
         Console.WriteLine(token);
-        while (token.TokenType != TokenType.Eof)
+        while (token.TokenType != TokenConstants.Eof)
         {
             _tokens.Add(token);
             token = _lexer.NextToken();
@@ -147,7 +147,7 @@ public class LexerTests
             Console.WriteLine(tkn);
             Assert.Multiple(() =>
             {
-                Assert.That(_expectedTokenTypes[index], Is.EqualTo(tkn.TokenType));
+                Assert.That((int)_expectedTokenTypes[index], Is.EqualTo(tkn.TokenType));
                 Assert.That(_expectedTokenContents[index], Is.EqualTo(tkn.Content));
             });
         }

@@ -4,7 +4,7 @@ public class RealToken : Token
 {
     public double Value;
 
-    public RealToken(string content) : base(TokenType.Real, content)
+    public RealToken(string content) : base((int)DefaultTokenType.Real, content)
     {
         Value = double.Parse(content);
     }

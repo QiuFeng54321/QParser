@@ -10,8 +10,8 @@ public class DragonBookEg0455GrammarConstructor : GrammarConstructor
         var s = R("S");
         var c = R("C");
         s.Add(C(c, c));
-        c.Add(C(T(TokenType.OpenParen), c));
-        c.Add(C(T(TokenType.CloseParen)));
+        c.Add(C(T(DefaultTokenType.OpenParen), c));
+        c.Add(C(T(DefaultTokenType.CloseParen)));
         SetEntry(s);
     }
 }

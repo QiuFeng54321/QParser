@@ -4,18 +4,18 @@ using QParser.Lexer;
 
 namespace QParser.Parser;
 
-public class LL1ParseTable : IEnumerable<(Rule rule, TokenType tokenType, CompositeNonterminal compositeNonterminal)>
+public class LL1ParseTable : IEnumerable<(Rule rule, int tokenType, CompositeNonterminal compositeNonterminal)>
 {
-    private readonly Dictionary<Rule, Dictionary<TokenType, CompositeNonterminal>> _ruleTokenDictionary = new();
-    private readonly Dictionary<TokenType, Dictionary<Rule, CompositeNonterminal>> _tokenRuleDictionary = new();
+    private readonly Dictionary<Rule, Dictionary<int, CompositeNonterminal>> _ruleTokenDictionary = new();
+    private readonly Dictionary<int, Dictionary<Rule, CompositeNonterminal>> _tokenRuleDictionary = new();
 
-    public CompositeNonterminal this[Rule rule, TokenType tokenType]
+    public CompositeNonterminal this[Rule rule, int tokenType]
     {
         get => _ruleTokenDictionary[rule][tokenType];
         set
         {
             if (!_ruleTokenDictionary.ContainsKey(rule))
-                _ruleTokenDictionary.Add(rule, new Dictionary<TokenType, CompositeNonterminal>());
+                _ruleTokenDictionary.Add(rule, new Dictionary<int, CompositeNonterminal>());
             _ruleTokenDictionary[rule][tokenType] = value;
             if (!_tokenRuleDictionary.ContainsKey(tokenType))
                 _tokenRuleDictionary.Add(tokenType, new Dictionary<Rule, CompositeNonterminal>());
@@ -23,7 +23,7 @@ public class LL1ParseTable : IEnumerable<(Rule rule, TokenType tokenType, Compos
         }
     }
 
-    public IEnumerator<(Rule rule, TokenType tokenType, CompositeNonterminal compositeNonterminal)> GetEnumerator()
+    public IEnumerator<(Rule rule, int tokenType, CompositeNonterminal compositeNonterminal)> GetEnumerator()
     {
         foreach (var (rule, tokenDictionary) in _ruleTokenDictionary)
         foreach (var (tokenType, compositeNonterminal) in tokenDictionary)
@@ -35,12 +35,12 @@ public class LL1ParseTable : IEnumerable<(Rule rule, TokenType tokenType, Compos
         return GetEnumerator();
     }
 
-    public void Add(Rule rule, TokenType tokenType, CompositeNonterminal compositeNonterminal)
+    public void Add(Rule rule, int tokenType, CompositeNonterminal compositeNonterminal)
     {
         this[rule, tokenType] = compositeNonterminal;
     }
 
-    public bool TryAdd(Rule rule, TokenType tokenType, CompositeNonterminal compositeNonterminal)
+    public bool TryAdd(Rule rule, int tokenType, CompositeNonterminal compositeNonterminal)
     {
         if (_ruleTokenDictionary.TryGetValue(rule, out var value) && value.ContainsKey(tokenType))
             return this[rule, tokenType] == compositeNonterminal;
@@ -49,7 +49,7 @@ public class LL1ParseTable : IEnumerable<(Rule rule, TokenType tokenType, Compos
         return true;
     }
 
-    public bool TryGet(Rule rule, TokenType tokenType, out CompositeNonterminal? compositeNonterminal)
+    public bool TryGet(Rule rule, int tokenType, out CompositeNonterminal? compositeNonterminal)
     {
         if (_ruleTokenDictionary.TryGetValue(rule, out var value) &&
             value.TryGetValue(tokenType, out compositeNonterminal))
@@ -70,7 +70,7 @@ public class LL1ParseTable : IEnumerable<(Rule rule, TokenType tokenType, Compos
                     result.WithError(
                         $"M[{rule}, {first}] = {subRule} overlaps {this[rule, first]} by sharing the same FIRST");
 
-            if (subRule.First.Contains(TokenType.Epsilon))
+            if (subRule.First.Contains(TokenConstants.Epsilon))
                 foreach (var follow in rule.Follow)
                     if (!TryAdd(rule, follow, subRule))
                         result.WithError(

@@ -29,7 +29,7 @@ public class LL1Parser : QParser
         var next = _stack.Pop();
         if (next is TokenTerminal tokenTerminal)
         {
-            if (tokenTerminal.TokenType is TokenType.Epsilon) return false;
+            if (tokenTerminal.TokenType is TokenConstants.Epsilon) return false;
             if (tokenTerminal.TokenType != lookahead.TokenType)
             {
                 new PrettyException(FileInformation, lookahead.SourceRange,

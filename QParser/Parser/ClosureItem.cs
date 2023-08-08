@@ -4,20 +4,20 @@ using QParser.Lexer;
 namespace QParser.Parser;
 
 public record ClosureItem(Rule Rule, CompositeNonterminal Production, int Index,
-    TokenType Lookahead = TokenType.Unknown)
+    int Lookahead = TokenConstants.Unknown)
 {
     public Nonterminal? AfterDot => Index >= Production.Components.Length ? null : Production.Components[Index];
     public Nonterminal? BeforeDot => Index == 0 ? null : Production.Components[Index - 1];
 
-    public bool IsLR1 => Lookahead is not TokenType.Unknown;
+    public bool IsLR1 => Lookahead is not TokenConstants.Unknown;
 
     public static IEqualityComparer<ClosureItem> LookaheadIrrelevantComparer { get; } =
         new LookaheadIrrelevantEqualityComparer();
 
-    public HashSet<TokenType> FirstAfterAfterDot()
+    public HashSet<int> FirstAfterAfterDot()
     {
-        if (Index + 1 >= Production.Components.Length) return new HashSet<TokenType> { Lookahead };
-        var first = new HashSet<TokenType>();
+        if (Index + 1 >= Production.Components.Length) return new HashSet<int> { Lookahead };
+        var first = new HashSet<int>();
         for (var i = Index + 1; i < Production.Components.Length; i++)
         {
             first.UnionWith(Production.Components[i].First);
@@ -50,7 +50,7 @@ public record ClosureItem(Rule Rule, CompositeNonterminal Production, int Index,
         return sb.ToString();
     }
 
-    public void Deconstruct(out Rule rule, out CompositeNonterminal production, out int index, out TokenType lookahead)
+    public void Deconstruct(out Rule rule, out CompositeNonterminal production, out int index, out int lookahead)
     {
         rule = Rule;
         production = Production;

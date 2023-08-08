@@ -5,7 +5,7 @@ namespace QParser.Parser;
 
 public class SLRParser : QParser
 {
-    private readonly Dictionary<(int state, TokenType tokenType), LRAction> _actionTable = new();
+    private readonly Dictionary<(int state, int tokenType), LRAction> _actionTable = new();
     private readonly LR0ClosureTable _closureTable;
     private readonly Dictionary<(int state, Rule rule), LRAction> _gotoTable = new();
 
@@ -25,8 +25,8 @@ public class SLRParser : QParser
         foreach (var ((id, symbol), closure) in _closureTable.GotoTable)
             if (symbol is TokenTerminal tokenTerminal)
             {
-                if (tokenTerminal.TokenType is TokenType.Eof)
-                    _actionTable[(id, TokenType.Eof)] = new LRAction();
+                if (tokenTerminal.TokenType is TokenConstants.Eof)
+                    _actionTable[(id, TokenConstants.Eof)] = new LRAction();
                 else if (!_actionTable.TryAdd((id, tokenTerminal.TokenType), new LRAction(closure.Id))) isSLR1 = false;
             }
             else if (symbol is Rule rule)

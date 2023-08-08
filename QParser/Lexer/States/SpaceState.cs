@@ -30,7 +30,7 @@ public class SpaceState : State
 
     public override Token Accept(string str)
     {
-        return new Token(TokenType.Space, str);
+        return new Token((int)DefaultTokenType.Space, str);
     }
 
     public override StateTransition MakeTransitionToThis()

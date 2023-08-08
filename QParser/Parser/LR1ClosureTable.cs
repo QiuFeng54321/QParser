@@ -11,7 +11,7 @@ public class LR1ClosureTable : ClosureTable
                 startingRule,
                 startingRule.SubRules.First(),
                 0,
-                TokenType.Eof);
+                TokenConstants.Eof);
         var startingKernels = new ClosureItemSet { startingClosureItem };
         StartingClosure = new Closure(NewId, startingKernels);
         RegisterClosure(StartingClosure);

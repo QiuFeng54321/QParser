@@ -1,8 +1,10 @@
 namespace QParser.Lexer;
 
-public enum TokenType
+public enum DefaultTokenType
 {
-    Unknown,
+    Eof = TokenConstants.Eof,
+    Epsilon = TokenConstants.Epsilon,
+    Unknown = TokenConstants.Unknown,
     Identifier,
     Integer,
     Real,
@@ -37,7 +39,5 @@ public enum TokenType
     CloseBracket,
     OpenBrace,
     CloseBrace,
-    Eof,
     Space,
-    Epsilon
 }

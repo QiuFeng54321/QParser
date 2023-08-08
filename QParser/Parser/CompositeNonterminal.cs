@@ -55,7 +55,7 @@ public class CompositeNonterminal : Nonterminal
                 if (!component.CanBeEmpty) return;
             }
 
-            First.Add(TokenType.Epsilon);
+            First.Add(TokenConstants.Epsilon);
         }
     }
 

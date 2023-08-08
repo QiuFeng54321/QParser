@@ -16,8 +16,8 @@ public class Grammar
 
     public Grammar()
     {
-        Epsilon = new CompositeNonterminal(this, new TokenTerminal(this, TokenType.Epsilon));
-        Eof = new CompositeNonterminal(this, new TokenTerminal(this, TokenType.Eof));
+        Epsilon = new CompositeNonterminal(this, new TokenTerminal(this, TokenConstants.Epsilon));
+        Eof = new CompositeNonterminal(this, new TokenTerminal(this, TokenConstants.Eof));
     }
 
     public Rule? EntryRule { set; get; }
@@ -68,7 +68,7 @@ public class Grammar
         foreach (var subRule in rule.SubRules)
         {
             // Iterate backwards so that FIRST set can be generated more efficiently
-            HashSet<TokenType> first = new();
+            HashSet<int> first = new();
             for (var i = subRule.Components.Length - 1; i >= 1; i--)
             {
                 // Only keep the FIRST set from the left to the first non-epsilon-deriving component
@@ -80,12 +80,12 @@ public class Grammar
                 // Do not add epsilon if FIRST doesn't include one
                 // A -> aBb: FOLLOW(B) += FIRST(b) except epsilon
                 var followShouldHaveEpsilon = previousComponent.Follow
-                    .Contains(TokenType.Epsilon);
+                    .Contains(TokenConstants.Epsilon);
                 previousComponent.Follow.UnionWith(first);
                 if (!followShouldHaveEpsilon)
-                    previousComponent.Follow.Remove(TokenType.Epsilon);
+                    previousComponent.Follow.Remove(TokenConstants.Epsilon);
                 // A -> aBb, b =*> epsilon: FOLLOW(B) += FOLLOW(A)
-                if (first.Contains(TokenType.Epsilon)) previousComponent.FollowGenerator.Add(rule);
+                if (first.Contains(TokenConstants.Epsilon)) previousComponent.FollowGenerator.Add(rule);
             }
 
             // A -> aB: FOLLOW(B) += FOLLOW(A)
@@ -97,7 +97,7 @@ public class Grammar
     {
         if (FollowGenerated) return;
         GenerateFirst();
-        // EntryRule?.Follow.Add(TokenType.Eof);
+        // EntryRule?.Follow.Add(TokenConstants.Eof);
         GenerateFollowGenerator();
         var changed = true;
         while (changed)
@@ -138,7 +138,7 @@ public class Grammar
         foreach (var rule in Rules)
         {
             if (rule.SubRules.Count == 0) return Result.Fail($"Empty rule: {rule}"); // ???
-            HashSet<TokenType> overlappingFirst = new();
+            HashSet<int> overlappingFirst = new();
             var firstIteration = true;
             var hasEmpty = false;
             CompositeNonterminal? overlappingSubRule = null;

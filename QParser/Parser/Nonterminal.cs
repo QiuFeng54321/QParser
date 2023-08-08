@@ -1,12 +1,10 @@
-using QParser.Lexer;
-
 namespace QParser.Parser;
 
 public abstract class Nonterminal
 {
-    public readonly HashSet<TokenType> First = new();
+    public readonly HashSet<int> First = new();
     public readonly HashSet<Nonterminal> FirstGenerator = new();
-    public readonly HashSet<TokenType> Follow = new();
+    public readonly HashSet<int> Follow = new();
     public readonly HashSet<Nonterminal> FollowGenerator = new();
     protected readonly Grammar Grammar;
     public readonly HashSet<ClosureItem> NonKernelItems = new();

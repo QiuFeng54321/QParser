@@ -8,7 +8,8 @@ public class TestParser1GrammarConstructor : GrammarConstructor
     public override void Construct()
     {
         var decl = R("Declare Statement",
-            C(T(TokenType.Declare), T(TokenType.Identifier), T(TokenType.Colon), T(TokenType.Identifier))
+            C(T(DefaultTokenType.Declare), T(DefaultTokenType.Identifier), T(DefaultTokenType.Colon),
+                T(DefaultTokenType.Identifier))
         );
         SetEntry(decl);
     }

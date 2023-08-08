@@ -8,9 +8,14 @@ public abstract class GrammarConstructor
     protected CompositeNonterminal Epsilon => Grammar.Epsilon;
     public abstract void Construct();
 
-    protected TokenTerminal T(TokenType tokenType)
+    protected TokenTerminal T(int tokenType)
     {
         return new TokenTerminal(Grammar, tokenType);
+    }
+
+    protected TokenTerminal T<TToken>(TToken tokenType) where TToken : Enum
+    {
+        return T(tokenType.ToInt());
     }
 
     protected CompositeNonterminal C(params Nonterminal[] components)
@@ -27,7 +32,7 @@ public abstract class GrammarConstructor
 
     protected void SetEntry(Rule rule)
     {
-        Grammar.EntryRule = R("$ENTRY", C(rule, T(TokenType.Eof)));
+        Grammar.EntryRule = R("$ENTRY", C(rule, T(TokenConstants.Eof)));
         Grammar.AddRule(Grammar.EntryRule);
     }
 }

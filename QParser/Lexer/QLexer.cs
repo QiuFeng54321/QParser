@@ -9,37 +9,37 @@ public class QLexer : IEnumerable<Token>
 {
     private readonly Stack<int> _indentStack = new();
 
-    private readonly Dictionary<string, TokenType> _plainSymbols = new()
+    private readonly Dictionary<string, DefaultTokenType> _plainSymbols = new()
     {
-        ["DECLARE"] = TokenType.Declare,
-        ["AS"] = TokenType.As,
-        ["IF"] = TokenType.If,
-        ["THEN"] = TokenType.Then,
-        ["ELSE"] = TokenType.Else,
-        ["FOR"] = TokenType.For,
-        ["TO"] = TokenType.To,
-        [">"] = TokenType.GreaterThan,
-        ["<"] = TokenType.LessThan,
-        [">="] = TokenType.GreaterThanOrEqualTo,
-        ["<="] = TokenType.LessThanOrEqualTo,
-        ["="] = TokenType.Equal,
-        ["<>"] = TokenType.NotEqual,
-        ["+"] = TokenType.Plus,
-        ["-"] = TokenType.Minus,
-        ["*"] = TokenType.Multiply,
-        ["/"] = TokenType.Divide,
-        ["DIV"] = TokenType.IntDivide,
-        ["^"] = TokenType.Power,
-        ["("] = TokenType.OpenParen,
-        [")"] = TokenType.CloseParen,
-        ["["] = TokenType.OpenBracket,
-        ["]"] = TokenType.CloseBracket,
-        ["{"] = TokenType.OpenBrace,
-        ["}"] = TokenType.CloseBrace,
-        ["<-"] = TokenType.Assignment,
-        ["."] = TokenType.Dot,
-        [":"] = TokenType.Colon,
-        [","] = TokenType.Comma
+        ["DECLARE"] = DefaultTokenType.Declare,
+        ["AS"] = DefaultTokenType.As,
+        ["IF"] = DefaultTokenType.If,
+        ["THEN"] = DefaultTokenType.Then,
+        ["ELSE"] = DefaultTokenType.Else,
+        ["FOR"] = DefaultTokenType.For,
+        ["TO"] = DefaultTokenType.To,
+        [">"] = DefaultTokenType.GreaterThan,
+        ["<"] = DefaultTokenType.LessThan,
+        [">="] = DefaultTokenType.GreaterThanOrEqualTo,
+        ["<="] = DefaultTokenType.LessThanOrEqualTo,
+        ["="] = DefaultTokenType.Equal,
+        ["<>"] = DefaultTokenType.NotEqual,
+        ["+"] = DefaultTokenType.Plus,
+        ["-"] = DefaultTokenType.Minus,
+        ["*"] = DefaultTokenType.Multiply,
+        ["/"] = DefaultTokenType.Divide,
+        ["DIV"] = DefaultTokenType.IntDivide,
+        ["^"] = DefaultTokenType.Power,
+        ["("] = DefaultTokenType.OpenParen,
+        [")"] = DefaultTokenType.CloseParen,
+        ["["] = DefaultTokenType.OpenBracket,
+        ["]"] = DefaultTokenType.CloseBracket,
+        ["{"] = DefaultTokenType.OpenBrace,
+        ["}"] = DefaultTokenType.CloseBrace,
+        ["<-"] = DefaultTokenType.Assignment,
+        ["."] = DefaultTokenType.Dot,
+        [":"] = DefaultTokenType.Colon,
+        [","] = DefaultTokenType.Comma
     };
 
     private readonly RootState _rootState;
@@ -70,7 +70,7 @@ public class QLexer : IEnumerable<Token>
         {
             token = NextToken();
             yield return token;
-        } while (token.TokenType is not TokenType.Eof);
+        } while (token.TokenType != TokenConstants.Eof);
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -80,7 +80,7 @@ public class QLexer : IEnumerable<Token>
 
     private void RegisterPlainSymbols()
     {
-        foreach (var (str, tokenType) in _plainSymbols) _rootState.RootTrieState.Add(str, tokenType);
+        foreach (var (str, tokenType) in _plainSymbols) _rootState.RootTrieState.Add(str, (int)tokenType);
     }
 
     private void RegisterNumberStateTransition()
@@ -124,13 +124,13 @@ public class QLexer : IEnumerable<Token>
 
 
     /// <summary>
-    ///     Reads the next token. If the stream is at its end, returns <see cref="TokenType.Eof" />
+    ///     Reads the next token. If the stream is at its end, returns <see cref="TokenConstants.Eof" />
     /// </summary>
     /// <returns> The next token </returns>
     /// <exception cref="FormatException">The token processor cannot identify this token</exception>
     public Token NextToken()
     {
-        if (NextCharIsEof) return new Token(TokenType.Eof, "$");
+        if (NextCharIsEof) return new Token(TokenConstants.Eof, "$");
         _currentState = _rootState;
         _stringBuilder.Clear();
         var accept = false;
@@ -201,13 +201,13 @@ public class QLexer : IEnumerable<Token>
         if (token.SourceRange.Start.Column != 0 || _currentState is not SpaceState { CanBeIndent: true }) return token;
         if (token.Content.Length > _indentStack.Peek())
         {
-            token.TokenType = TokenType.Indent;
+            token.TokenType = (int)DefaultTokenType.Indent;
             token.Ignore = false;
             _indentStack.Push(token.Content.Length);
         }
         else if (token.Content.Length < _indentStack.Peek())
         {
-            token.TokenType = TokenType.Dedent;
+            token.TokenType = (int)DefaultTokenType.Dedent;
             token.Ignore = false;
             _indentStack.Pop();
         }

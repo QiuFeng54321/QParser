@@ -4,15 +4,15 @@ namespace QParser.Parser;
 
 public class TokenTerminal : Nonterminal
 {
-    public readonly TokenType TokenType;
+    public readonly int TokenType;
 
-    public TokenTerminal(Grammar grammar, TokenType tokenType) : base(grammar)
+    public TokenTerminal(Grammar grammar, int tokenType) : base(grammar)
     {
         TokenType = tokenType;
-        Name = TokenType is TokenType.Epsilon ? "ϵ" : TokenType.ToString();
+        Name = TokenType is TokenConstants.Epsilon ? "ϵ" : TokenType.ToString();
         // FIRST and CanBeEmpty can always be directly deduced independently
         First.Add(TokenType);
-        CanBeEmpty = TokenType is TokenType.Epsilon;
+        CanBeEmpty = TokenType is TokenConstants.Epsilon;
         CanBeEmptyGenerated = true;
     }
 

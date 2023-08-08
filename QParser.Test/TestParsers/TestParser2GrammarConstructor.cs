@@ -25,13 +25,13 @@ public class TestParser2GrammarConstructor : GrammarConstructor
         var e = R("E");
         SetEntry(add);
         add.Add(mult, add2);
-        add2.Add(T(TokenType.Plus), mult, add2)
+        add2.Add(T(DefaultTokenType.Plus), mult, add2)
             .Add(Epsilon);
         mult.Add(e, mult2);
-        mult2.Add(T(TokenType.Multiply), e, mult2)
+        mult2.Add(T(DefaultTokenType.Multiply), e, mult2)
             .Add(Epsilon);
-        e.Add(T(TokenType.OpenParen), add, T(TokenType.CloseParen))
-            .Add(T(TokenType.Integer))
-            .Add(T(TokenType.Real));
+        e.Add(T(DefaultTokenType.OpenParen), add, T(DefaultTokenType.CloseParen))
+            .Add(T(DefaultTokenType.Integer))
+            .Add(T(DefaultTokenType.Real));
     }
 }

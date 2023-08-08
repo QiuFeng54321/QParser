@@ -24,10 +24,10 @@ public class TestParser3RecursiveGrammarConstructor : GrammarConstructor
         SetEntry(a);
         a.Add(a, b)
             .Add(b, a)
-            .Add(T(TokenType.Identifier));
+            .Add(T(DefaultTokenType.Identifier));
         b.Add(c, a)
             .Add(c)
-            .Add(T(TokenType.Integer));
+            .Add(T(DefaultTokenType.Integer));
         c.Add(C(b, c))
             .Add(Epsilon);
     }
