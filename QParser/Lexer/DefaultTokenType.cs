@@ -33,6 +33,8 @@ public enum DefaultTokenType
     Divide,
     IntDivide,
     Power,
+    BitAnd,
+    BitOr,
     OpenParen,
     CloseParen,
     OpenBracket,
@@ -40,4 +42,5 @@ public enum DefaultTokenType
     OpenBrace,
     CloseBrace,
     Space,
+    Semicolon
 }

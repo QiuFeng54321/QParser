@@ -93,6 +93,25 @@ public class LexerTestsFixtureData
                     DefaultTokenType.Minus,
                     DefaultTokenType.Real
                 });
+            yield return new TestFixtureData("Misc", new[]
+            {
+                "<",
+                "E",
+                ">",
+                "ABC",
+                "<",
+                "E",
+                ">"
+            }, new[]
+            {
+                DefaultTokenType.LessThan,
+                DefaultTokenType.Identifier,
+                DefaultTokenType.GreaterThan,
+                DefaultTokenType.Identifier,
+                DefaultTokenType.LessThan,
+                DefaultTokenType.Identifier,
+                DefaultTokenType.GreaterThan
+            });
         }
     }
 }

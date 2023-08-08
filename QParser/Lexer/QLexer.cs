@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Text;
+using System.Text.RegularExpressions;
 using QParser.Lexer.States;
 using QParser.Lexer.Tokens;
 
@@ -30,6 +31,8 @@ public class QLexer : IEnumerable<Token>
         ["/"] = DefaultTokenType.Divide,
         ["DIV"] = DefaultTokenType.IntDivide,
         ["^"] = DefaultTokenType.Power,
+        ["&"] = DefaultTokenType.BitAnd,
+        ["|"] = DefaultTokenType.BitOr,
         ["("] = DefaultTokenType.OpenParen,
         [")"] = DefaultTokenType.CloseParen,
         ["["] = DefaultTokenType.OpenBracket,
@@ -39,6 +42,7 @@ public class QLexer : IEnumerable<Token>
         ["<-"] = DefaultTokenType.Assignment,
         ["."] = DefaultTokenType.Dot,
         [":"] = DefaultTokenType.Colon,
+        [";"] = DefaultTokenType.Semicolon,
         [","] = DefaultTokenType.Comma
     };
 
@@ -166,7 +170,7 @@ public class QLexer : IEnumerable<Token>
             }
 
             var transition = _currentState.NextState(c);
-            // Console.WriteLine($"'{Regex.Escape(c.ToString())}': {transition}");
+            Console.WriteLine($"'{Regex.Escape(c.ToString())}': {transition}");
             var consume = transition.Flag.HasFlag(StateTransitionFlag.ConsumeChar);
 
             if (transition.Flag.HasFlag(StateTransitionFlag.Accept))
@@ -178,7 +182,8 @@ public class QLexer : IEnumerable<Token>
             if (transition.State != null) _currentState = transition.State;
             if (transition.Flag.HasFlag(StateTransitionFlag.Error))
                 throw new FormatException(
-                    $"Unrecognized token: \"{_stringBuilder}\" at {_currentCharPosition.ToStringWithFile()}");
+                    $"Unrecognized token: \"{_stringBuilder}\" at {_currentCharPosition.ToStringWithFile()}," +
+                    $"Current state {_currentState}, {transition}");
 
             if (consume)
             {

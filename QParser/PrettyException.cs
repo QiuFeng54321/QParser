@@ -25,8 +25,9 @@ public class PrettyException
             .Append(Message)
             .AppendLine(":");
         const int maxLineBefore = 3;
-        for (var i = 0; i < int.Min(SourceRange.Start.Line, maxLineBefore); i++)
-            sb.AppendLine(FileInformation.Lines[SourceRange.Start.Line - maxLineBefore + i]);
+        var linesBefore = int.Min(SourceRange.Start.Line, maxLineBefore);
+        for (var i = 0; i < linesBefore; i++)
+            sb.AppendLine(FileInformation.Lines[SourceRange.Start.Line - linesBefore + i]);
 
         Console.WriteLine($"{SourceRange.Start} .. {SourceRange.End}");
         for (var line = SourceRange.Start.Line; line <= SourceRange.End.Line; line++)

@@ -18,6 +18,7 @@ public class ParserFeatureGenerationTestsFixtureData
             yield return new TestFixtureData(() => new DragonBook4_2_2eGrammarConstructor());
             yield return new TestFixtureData(() => new DragonBook4_2_2fGrammarConstructor());
             yield return new TestFixtureData(() => new DragonBookEg0455GrammarConstructor());
+            yield return new TestFixtureData(() => new BNF_GrammarConstructor());
         }
     }
 }

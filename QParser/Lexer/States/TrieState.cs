@@ -84,8 +84,8 @@ public class TrieState : State
         if (_next.TryGetValue(c, out var value)) return value.MakeTransitionToThis();
         if (((_canBeIdentifier && !IdentifierState.CheckBody(c)) || !_canBeIdentifier) && _isAccept)
             return StateTransition.Accept;
-        if (_canBeIdentifier && IdentifierState.CheckBody(c))
-            return new IdentifierState(this).MakeTransitionToThis();
+        if (_canBeIdentifier)
+            return new StateTransition(new IdentifierState(this), StateTransitionFlag.None);
         return StateTransition.Error;
     }
 

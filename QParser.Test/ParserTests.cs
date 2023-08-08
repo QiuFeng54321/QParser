@@ -23,6 +23,10 @@ public class ParserTestsFixtureData
                 new ParserTestCase(")32*((3)", SupportedParsers.None));
             yield return new TestFixtureData(new DragonBook4_2_1GrammarConstructor(),
                 new ParserTestCase("3 5 * 6 + 7 * 8 9 + 10 * *", SupportedParsers.CanonicalLR | SupportedParsers.SLR));
+            yield return new TestFixtureData(new BNF_GrammarConstructor(),
+                new ParserTestCase(
+                    "<S> = <S> PLUS <E> | <S> MULT <E> | <E>;\n<E> = OPAREN <S> CPAREN | INT;\nINT = 1; PLUS = 2; MULT = 3; OPAREN = 4; CPAREN = 5;",
+                    SupportedParsers.CanonicalLR | SupportedParsers.SLR));
         }
     }
 }
