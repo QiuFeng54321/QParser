@@ -20,4 +20,5 @@ public abstract class QParser
     public abstract void Feed(Token token);
     public abstract void DumpStates();
     public abstract void DumpTables();
+    public abstract ParseTreeNode GetParseTree();
 }

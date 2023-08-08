@@ -1,3 +1,5 @@
+using QParser.Parser.LR;
+
 namespace QParser.Parser;
 
 public abstract class Nonterminal

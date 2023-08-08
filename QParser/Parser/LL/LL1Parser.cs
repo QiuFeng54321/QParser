@@ -66,6 +66,7 @@ public class LL1Parser : QParser
     public override void Generate()
     {
         var genRes = _parseTable.GenerateFromGrammar(Grammar);
+        IsParserValid = true;
         genRes.HasError(err => IsParserValid = false);
     }
 
@@ -90,5 +91,10 @@ public class LL1Parser : QParser
     {
         foreach (var (rule, token, compositeRule) in _parseTable)
             Console.WriteLine($"M[{rule}, {token}] = {compositeRule}");
+    }
+
+    public override ParseTreeNode GetParseTree()
+    {
+        return new TokenParseTreeNode(TokenConstants.Unknown, new Token(TokenConstants.Unknown, ""));
     }
 }

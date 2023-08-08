@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace QParser.Parser;
+namespace QParser.Parser.LR;
 
 public class Closure
 {

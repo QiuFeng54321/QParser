@@ -1,28 +1,27 @@
-namespace QParser.Parser;
+using QParser.Lexer;
 
-public class LR0ClosureTable : ClosureTable
+namespace QParser.Parser.LR;
+
+public class LR1ClosureTable : ClosureTable
 {
-    public LR0ClosureTable(Rule startingRule)
+    public LR1ClosureTable(Rule startingRule)
     {
-        var startingClosureItem = new ClosureItem(startingRule, startingRule.SubRules.First(), 0);
+        var startingClosureItem =
+            new ClosureItem(
+                startingRule,
+                startingRule.SubRules.First(),
+                0,
+                TokenConstants.Eof);
         var startingKernels = new ClosureItemSet { startingClosureItem };
         StartingClosure = new Closure(NewId, startingKernels);
         RegisterClosure(StartingClosure);
     }
 
-
-    /// <summary>
-    ///     Generates the full closure table, containing CLOSURE and GOTO
-    /// </summary>
     public override void Generate()
     {
         GenerateGoto(StartingClosure);
     }
 
-    /// <summary>
-    ///     Advances each item in the closure by 1 index, and generates GOTO(item)
-    /// </summary>
-    /// <param name="closure">The closure containing the items to generate GOTO for</param>
     private void GenerateGoto(Closure closure)
     {
         Dictionary<Nonterminal, ClosureItemSet> itemsToAdd = new();

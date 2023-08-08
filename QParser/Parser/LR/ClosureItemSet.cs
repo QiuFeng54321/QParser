@@ -1,4 +1,4 @@
-namespace QParser.Parser;
+namespace QParser.Parser.LR;
 
 public class ClosureItemSet : HashSet<ClosureItem>
 {

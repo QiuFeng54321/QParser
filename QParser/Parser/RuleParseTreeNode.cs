@@ -1,0 +1,34 @@
+using System.Text;
+
+namespace QParser.Parser;
+
+public class RuleParseTreeNode : ParseTreeNode
+{
+    public CompositeNonterminal Production;
+    public Rule Rule;
+
+    public RuleParseTreeNode(Rule rule, CompositeNonterminal production)
+    {
+        Rule = rule;
+        Production = production;
+    }
+
+    public override SourceRange SourceRange
+    {
+        get
+        {
+            if (Nodes.Count == 0) return new SourceRange(CharPosition.Undefined, CharPosition.Undefined);
+            return new SourceRange(Nodes[0].SourceRange.Start, Nodes[^1].SourceRange.End);
+        }
+    }
+
+    public override void Format(StringBuilder stringBuilder, int indent)
+    {
+        stringBuilder.AppendLine($"{Rule} -> {Production}: ");
+        foreach (var node in Nodes)
+        {
+            stringBuilder.Append(new string('-', indent * 2));
+            node.Format(stringBuilder, indent + 1);
+        }
+    }
+}

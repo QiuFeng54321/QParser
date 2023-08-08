@@ -1,7 +1,7 @@
 using System.Text;
 using QParser.Lexer;
 
-namespace QParser.Parser;
+namespace QParser.Parser.LR;
 
 public record ClosureItem(Rule Rule, CompositeNonterminal Production, int Index,
     int Lookahead = TokenConstants.Unknown)

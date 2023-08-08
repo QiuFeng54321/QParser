@@ -1,5 +1,6 @@
 using System.Collections;
 using QParser.Parser;
+using QParser.Parser.LR;
 using QParser.Test.TestParsers;
 
 namespace QParser.Test;
@@ -108,7 +109,7 @@ public class ParserFeatureGenerationTests
     {
         if (_grammar.EntryRule == null) Assert.Pass();
         _grammar.GenerateAll();
-        var parser = new LRParser(_grammar, null!);
+        var parser = new CanonicalLRParser(_grammar, null!);
         var isLR = parser.GenerateTables();
         parser.DumpTables();
         Console.WriteLine($"Is LR: {isLR}");

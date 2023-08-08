@@ -17,6 +17,13 @@ public class Token
 
     public override string ToString()
     {
-        return $"[{TokenType} '{Regex.Escape(Content)}' ({SourceRange})]{(Ignore ? "?" : "")}";
+        var tokenTypeStr = TokenType switch
+        {
+            TokenConstants.Eof => "EOF",
+            TokenConstants.Epsilon => "ϵ",
+            TokenConstants.Unknown => "?",
+            _ => ((DefaultTokenType)TokenType).ToString()
+        };
+        return $"[{tokenTypeStr} '{Regex.Escape(Content)}' ({SourceRange})]{(Ignore ? "?" : "")}";
     }
 }
