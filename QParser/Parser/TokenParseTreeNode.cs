@@ -9,7 +9,7 @@ public class TokenParseTreeNode : ParseTreeNode
     public readonly Token Token;
     public readonly int TokenType;
 
-    public TokenParseTreeNode(int tokenType, Token token)
+    public TokenParseTreeNode(int tokenType, Token token) : base(new List<ParseTreeNode>())
     {
         TokenType = tokenType;
         Token = token;

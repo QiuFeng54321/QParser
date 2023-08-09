@@ -36,7 +36,10 @@ public abstract class LRParser : QParser
                 if (tokenTerminal.TokenType is TokenConstants.Eof)
                     ActionTable[(id, TokenConstants.Eof)] = new AcceptLRAction();
                 else if (!ActionTable.TryAdd((id, tokenTerminal.TokenType), new ShiftLRAction(closure.Id)))
+                {
+                    GenerationErrors.Add(new Exception($"Conflict in ACTION[{id}, {tokenTerminal.TokenType}]"));
                     isLR1 = false;
+                }
             }
             else if (symbol is Rule rule)
             {
@@ -83,12 +86,14 @@ public abstract class LRParser : QParser
             else if (action is ReduceLRAction reduceLRAction)
             {
                 var count = reduceLRAction.Production.Components.Length;
-                var node = new RuleParseTreeNode(reduceLRAction.Rule, reduceLRAction.Production);
+                var children = new List<ParseTreeNode>();
                 for (var i = 0; i < count; i++)
                 {
-                    node.Nodes.Insert(0, _treeNodeStack.Pop());
+                    children.Insert(0, _treeNodeStack.Pop());
                     _stateStack.Pop();
                 }
+
+                var node = reduceLRAction.Rule.MakeNode(reduceLRAction.Production, children);
 
                 curState = _stateStack.Peek();
                 var gotoState = GotoTable[(curState, reduceLRAction.Rule)];

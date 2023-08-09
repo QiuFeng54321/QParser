@@ -4,7 +4,13 @@ namespace QParser.Parser;
 
 public abstract class ParseTreeNode
 {
-    public readonly List<ParseTreeNode> Nodes = new();
+    public readonly List<ParseTreeNode> Nodes;
+
+    protected ParseTreeNode(List<ParseTreeNode> nodes)
+    {
+        Nodes = nodes;
+    }
+
     public abstract SourceRange SourceRange { get; }
     public abstract void Format(StringBuilder stringBuilder, int indent);
 

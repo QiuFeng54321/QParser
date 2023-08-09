@@ -5,11 +5,14 @@ namespace QParser.Parser;
 
 public class Rule : Nonterminal
 {
+    public readonly bool IsGenerated;
     public readonly HashSet<CompositeNonterminal> SubRules;
 
-    public Rule(Grammar grammar, string name, HashSet<CompositeNonterminal> subRules) : base(grammar)
+    public Rule(Grammar grammar, string name, HashSet<CompositeNonterminal> subRules, bool isGenerated = false) :
+        base(grammar)
     {
         SubRules = subRules;
+        IsGenerated = isGenerated;
         Name = name;
     }
 
@@ -65,6 +68,11 @@ public class Rule : Nonterminal
     {
         SubRules.Add(new CompositeNonterminal(Grammar, nonterminal));
         return this;
+    }
+
+    public virtual ParseTreeNode MakeNode(CompositeNonterminal production, List<ParseTreeNode> children)
+    {
+        return new RuleParseTreeNode(this, production, children);
     }
 
 

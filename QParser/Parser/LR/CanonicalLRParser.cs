@@ -12,7 +12,11 @@ public class CanonicalLRParser : LRParser
         var isLR1 = true;
         foreach (var (id, item) in ClosureTable.FinishedItems)
             if (!ActionTable.TryAdd((id, item.Lookahead), new ReduceLRAction(item.Rule, item.Production)))
+            {
+                GenerationErrors.Add(new Exception($"Reduce conflict in ACTION[{id}, {item.Lookahead}]"));
                 isLR1 = false;
+            }
+
         return isLR1;
     }
 }

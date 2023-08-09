@@ -26,7 +26,7 @@ public class ParserTestsFixtureData
             yield return new TestFixtureData(new BNF_GrammarConstructor(),
                 new ParserTestCase(
                     "<S> = <S> PLUS <E> | <S> MULT <E> | <E>;\n<E> = OPAREN <S> CPAREN | INT;\nINT = 1; PLUS = 2; MULT = 3; OPAREN = 4; CPAREN = 5;",
-                    SupportedParsers.CanonicalLR | SupportedParsers.SLR));
+                    SupportedParsers.CanonicalLR));
         }
     }
 }
@@ -80,6 +80,9 @@ public class ParserTests
         {
             pass = !_parserTestCase.SupportedParsers.HasFlag(flag);
             testResult = false;
+            TestContext.WriteLine($"Cannot generate parser for {flag}:");
+            foreach (var error in parser.GenerationErrors) TestContext.WriteLine(error);
+            parser.DumpTables();
             return;
         }
 

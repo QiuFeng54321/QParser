@@ -13,7 +13,11 @@ public class SLRParser : LRParser
         foreach (var (id, (rule, production, _, _)) in ClosureTable.FinishedItems)
         foreach (var followToken in rule.Follow)
             if (!ActionTable.TryAdd((id, followToken), new ReduceLRAction(rule, production)))
+            {
+                GenerationErrors.Add(new Exception($"Reduce conflict in ACTION[{id}, {followToken}]"));
                 isSLR1 = false;
+            }
+
         return isSLR1;
     }
 }

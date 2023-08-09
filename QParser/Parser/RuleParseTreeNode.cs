@@ -4,10 +4,10 @@ namespace QParser.Parser;
 
 public class RuleParseTreeNode : ParseTreeNode
 {
-    public CompositeNonterminal Production;
-    public Rule Rule;
+    public readonly CompositeNonterminal Production;
+    public readonly Rule Rule;
 
-    public RuleParseTreeNode(Rule rule, CompositeNonterminal production)
+    public RuleParseTreeNode(Rule rule, CompositeNonterminal production, List<ParseTreeNode> nodes) : base(nodes)
     {
         Rule = rule;
         Production = production;

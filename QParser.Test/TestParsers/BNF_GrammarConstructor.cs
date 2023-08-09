@@ -7,22 +7,19 @@ public class BNF_GrammarConstructor : GrammarConstructor
 {
     public override void Construct()
     {
-        var stmts = R("Statements");
-        var stmt = R("Statement");
-        var composite = R("Composite");
-        var composites = R("Composites");
-        var symbol = R("Symbol");
-        var rule = R("Rule");
-        var token = R("Token");
-        rule.Add(T(DefaultTokenType.LessThan), T(DefaultTokenType.Identifier),
-            T(DefaultTokenType.GreaterThan));
-        token.Add(T(DefaultTokenType.Identifier));
-        symbol.Add(rule).Add(token);
-        composite.Add(composite, symbol).Add(symbol);
-        composites.Add(composites, T(DefaultTokenType.BitOr), composite).Add(composite);
-        stmt.Add(rule, T(DefaultTokenType.Equal), composites, T(DefaultTokenType.Semicolon));
-        stmt.Add(token, T(DefaultTokenType.Equal), T(DefaultTokenType.Integer), T(DefaultTokenType.Semicolon));
-        stmts.Add(stmts, stmt).Add(stmt);
+        var rule = R("Rule")
+            .Add(T(DefaultTokenType.LessThan), T(DefaultTokenType.Identifier), T(DefaultTokenType.GreaterThan));
+        var token = R("Token").Add(T(DefaultTokenType.Identifier));
+        var symbol = R("Symbol")
+            .Add(rule)
+            .Add(token);
+        var composite = ZeroOrMore("Composite", symbol);
+        var composites = R("Composites")
+            .Add(composite, ZeroOrMore("TrailingComposites", T(DefaultTokenType.BitOr), composite));
+        var stmt = R("Statement")
+            .Add(rule, T(DefaultTokenType.Equal), composites, T(DefaultTokenType.Semicolon))
+            .Add(token, T(DefaultTokenType.Equal), T(DefaultTokenType.Integer), T(DefaultTokenType.Semicolon));
+        var stmts = OneOrMany("Statements", stmt);
         SetEntry(stmts);
     }
 }
