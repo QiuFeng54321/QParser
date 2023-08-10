@@ -18,7 +18,7 @@ public abstract class LRParser : QParser
     {
         ClosureTable = closureTable;
         grammar.GenerateAll();
-        _stateStack.Push(0);
+        Reset();
     }
 
     public override bool Accepted => _accepted;
@@ -131,5 +131,12 @@ public abstract class LRParser : QParser
     public override ParseTreeNode GetParseTree()
     {
         return _treeNodeStack.Peek();
+    }
+
+    public sealed override void Reset()
+    {
+        _stateStack.Clear();
+        _treeNodeStack.Clear();
+        _stateStack.Push(0);
     }
 }

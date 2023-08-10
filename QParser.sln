@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QParser.Test", "QParser.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QParser.SourceGenerator", "QParser.SourceGenerator\QParser.SourceGenerator.csproj", "{B83E6312-3CBC-44C3-A19D-CA2158BE81D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QParser.SourceGenerator.Example", "QParser.SourceGenerator.Example\QParser.SourceGenerator.Example.csproj", "{F6DC4A96-202A-44DF-AF68-E0058141BAA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{B83E6312-3CBC-44C3-A19D-CA2158BE81D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B83E6312-3CBC-44C3-A19D-CA2158BE81D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B83E6312-3CBC-44C3-A19D-CA2158BE81D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6DC4A96-202A-44DF-AF68-E0058141BAA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6DC4A96-202A-44DF-AF68-E0058141BAA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6DC4A96-202A-44DF-AF68-E0058141BAA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6DC4A96-202A-44DF-AF68-E0058141BAA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -13,7 +13,7 @@ public class LL1Parser : QParser
     public LL1Parser(Grammar grammar, FileInformation fileInformation) : base(grammar, fileInformation)
     {
         FileInformation = fileInformation;
-        _stack.Push(Grammar.EntryRule ?? throw new InvalidOperationException("Undefined entry rule for grammar"));
+        Reset();
     }
 
     public override bool Accepted => _stack.Count == 0;
@@ -96,5 +96,12 @@ public class LL1Parser : QParser
     public override ParseTreeNode GetParseTree()
     {
         return new TokenParseTreeNode(TokenConstants.Unknown, new Token(TokenConstants.Unknown, ""));
+    }
+
+    public sealed override void Reset()
+    {
+        _stack.Clear();
+        _matched.Clear();
+        _stack.Push(Grammar.EntryRule ?? throw new InvalidOperationException("Undefined entry rule for grammar"));
     }
 }

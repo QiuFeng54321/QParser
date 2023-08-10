@@ -43,7 +43,8 @@ public class QLexer : IEnumerable<Token>
         ["."] = DefaultTokenType.Dot,
         [":"] = DefaultTokenType.Colon,
         [";"] = DefaultTokenType.Semicolon,
-        [","] = DefaultTokenType.Comma
+        [","] = DefaultTokenType.Comma,
+        ["?"] = DefaultTokenType.QuestionMark
     };
 
     private readonly RootState _rootState;
