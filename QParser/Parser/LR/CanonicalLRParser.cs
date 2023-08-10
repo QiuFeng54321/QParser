@@ -1,3 +1,5 @@
+using System;
+
 namespace QParser.Parser.LR;
 
 public class CanonicalLRParser : LRParser

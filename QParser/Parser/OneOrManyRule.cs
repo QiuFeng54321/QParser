@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace QParser.Parser;
 
 public class OneOrManyRule : Rule

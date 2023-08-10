@@ -1,8 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
 using FluentResults;
 using QParser.Lexer;
 
-namespace QParser.Parser;
+namespace QParser.Parser.LL;
 
 public class LL1ParseTable : IEnumerable<(Rule rule, int tokenType, CompositeNonterminal compositeNonterminal)>
 {

@@ -1,6 +1,9 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using FluentResults;
 using QParser.Lexer;
+using QParser.Parser.LL;
 
 namespace QParser.Parser;
 
@@ -89,7 +92,7 @@ public class Grammar
             }
 
             // A -> aB: FOLLOW(B) += FOLLOW(A)
-            subRule.Components[^1].FollowGenerator.Add(rule);
+            subRule.Components[subRule.Components.Length - 1].FollowGenerator.Add(rule);
         }
     }
 

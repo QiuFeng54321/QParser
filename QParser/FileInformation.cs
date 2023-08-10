@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace QParser;
 
 public class FileInformation

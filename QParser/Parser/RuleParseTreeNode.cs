@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 
 namespace QParser.Parser;
@@ -18,7 +19,7 @@ public class RuleParseTreeNode : ParseTreeNode
         get
         {
             if (Nodes.Count == 0) return new SourceRange(CharPosition.Undefined, CharPosition.Undefined);
-            return new SourceRange(Nodes[0].SourceRange.Start, Nodes[^1].SourceRange.End);
+            return new SourceRange(Nodes[0].SourceRange.Start, Nodes[Nodes.Count - 1].SourceRange.End);
         }
     }
 

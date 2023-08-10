@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace QParser.Parser.LR;
 
 public class LookaheadIrrelevantClosureItemSet : HashSet<ClosureItem>

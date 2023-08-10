@@ -1,3 +1,4 @@
+using System;
 using QParser.Lexer.Tokens;
 
 namespace QParser.Lexer.States;

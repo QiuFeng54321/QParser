@@ -4,9 +4,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QParser", "QParser\QParser.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QParser.Test", "QParser.Test\QParser.Test.csproj", "{6290F8BA-7AD9-444C-86E3-CED9EF3BF0D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QParser.SourceGenerator", "QParser.SourceGenerator\QParser.SourceGenerator.csproj", "{B83E6312-3CBC-44C3-A19D-CA2158BE81D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QParser.Generator", "QParser.Generator\QParser.Generator\QParser.Generator.csproj", "{9AB99813-5687-4571-87D5-77A2514EEC47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QParser.SourceGenerator.Example", "QParser.SourceGenerator.Example\QParser.SourceGenerator.Example.csproj", "{F6DC4A96-202A-44DF-AF68-E0058141BAA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QParser.Generator.Sample", "QParser.Generator\QParser.Generator.Sample\QParser.Generator.Sample.csproj", "{1FF4CB49-F00D-4CE7-9BCD-DD162C298B78}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QParser.Generator.Tests", "QParser.Generator\QParser.Generator.Tests\QParser.Generator.Tests.csproj", "{AC336551-6BD0-4E78-855D-D9A0EA6A9D4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,13 +24,17 @@ Global
 		{6290F8BA-7AD9-444C-86E3-CED9EF3BF0D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6290F8BA-7AD9-444C-86E3-CED9EF3BF0D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6290F8BA-7AD9-444C-86E3-CED9EF3BF0D4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B83E6312-3CBC-44C3-A19D-CA2158BE81D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B83E6312-3CBC-44C3-A19D-CA2158BE81D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B83E6312-3CBC-44C3-A19D-CA2158BE81D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B83E6312-3CBC-44C3-A19D-CA2158BE81D2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F6DC4A96-202A-44DF-AF68-E0058141BAA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F6DC4A96-202A-44DF-AF68-E0058141BAA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F6DC4A96-202A-44DF-AF68-E0058141BAA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F6DC4A96-202A-44DF-AF68-E0058141BAA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AB99813-5687-4571-87D5-77A2514EEC47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AB99813-5687-4571-87D5-77A2514EEC47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AB99813-5687-4571-87D5-77A2514EEC47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AB99813-5687-4571-87D5-77A2514EEC47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FF4CB49-F00D-4CE7-9BCD-DD162C298B78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FF4CB49-F00D-4CE7-9BCD-DD162C298B78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FF4CB49-F00D-4CE7-9BCD-DD162C298B78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FF4CB49-F00D-4CE7-9BCD-DD162C298B78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC336551-6BD0-4E78-855D-D9A0EA6A9D4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC336551-6BD0-4E78-855D-D9A0EA6A9D4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC336551-6BD0-4E78-855D-D9A0EA6A9D4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC336551-6BD0-4E78-855D-D9A0EA6A9D4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

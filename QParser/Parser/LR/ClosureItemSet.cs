@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace QParser.Parser.LR;
 
 public class ClosureItemSet : HashSet<ClosureItem>
@@ -14,11 +16,11 @@ public class ClosureItemSet : HashSet<ClosureItem>
     //     existingItem.Lookahead.UnionWith(item.Lookahead);
     //     return true;
     // }
-    public ClosureItemSet()
+    public ClosureItemSet() : base(ClosureItem.ClosureItemComparer)
     {
     }
 
-    public ClosureItemSet(IEnumerable<ClosureItem> collection) : base(collection)
+    public ClosureItemSet(IEnumerable<ClosureItem> collection) : base(collection, ClosureItem.ClosureItemComparer)
     {
     }
 }

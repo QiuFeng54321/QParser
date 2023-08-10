@@ -1,3 +1,5 @@
+using System;
+
 namespace QParser.Lexer.States;
 
 [Flags]

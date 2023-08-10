@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 
 namespace QParser;
@@ -25,7 +26,7 @@ public class PrettyException
             .Append(Message)
             .AppendLine(":");
         const int maxLineBefore = 3;
-        var linesBefore = int.Min(SourceRange.Start.Line, maxLineBefore);
+        var linesBefore = Math.Min(SourceRange.Start.Line, maxLineBefore);
         for (var i = 0; i < linesBefore; i++)
             sb.AppendLine(FileInformation.Lines[SourceRange.Start.Line - linesBefore + i]);
 

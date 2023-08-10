@@ -3,6 +3,7 @@ using System.Text;
 using QParser.Lexer;
 using QParser.Lexer.Tokens;
 using QParser.Parser;
+using QParser.Parser.LL;
 using QParser.Parser.LR;
 using QParser.Test.TestParsers;
 

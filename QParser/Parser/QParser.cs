@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using QParser.Lexer.Tokens;
 
 namespace QParser.Parser;
@@ -6,7 +8,7 @@ public abstract class QParser
 {
     public readonly List<Exception> GenerationErrors = new();
     protected readonly Grammar Grammar;
-    protected FileInformation FileInformation;
+    public FileInformation FileInformation;
 
     protected QParser(Grammar grammar, FileInformation fileInformation)
     {

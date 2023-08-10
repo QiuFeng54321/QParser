@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace QParser;
 
 public static class Extensions
@@ -15,5 +17,18 @@ public static class Extensions
         var lengthBefore = hashSet.Count;
         hashSet.UnionWith(hashSet2);
         return lengthBefore != hashSet.Count;
+    }
+
+    public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value)
+    {
+        if (dict.ContainsKey(key)) return false;
+        dict.Add(key, value);
+        return true;
+    }
+
+    public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> pair, out TKey key, out TValue value)
+    {
+        key = pair.Key;
+        value = pair.Value;
     }
 }

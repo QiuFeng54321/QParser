@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace QParser.Parser.LR;
 
 public abstract class ClosureTable

@@ -1,6 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
 using QParser.Lexer.States;
 using QParser.Lexer.Tokens;
 
@@ -55,6 +56,7 @@ public class QLexer : IEnumerable<Token>
     private State _currentState;
     private char _lookaheadChar;
     private bool _reserveOneChar;
+    private bool _zeroSpaceDedentGenerated;
 
     public QLexer(SourceInputStream sourceInputStream, FileInformation fileInformation)
     {
@@ -165,13 +167,19 @@ public class QLexer : IEnumerable<Token>
             {
                 // This is to look for dedent to 0 space.
                 // happens when at start of line with no space ahead, and the current indent level is not 0
+                // if (!_zeroSpaceDedentGenerated)
+                // {
                 ReserveOneChar();
-                _currentState = SpaceState.Identity;
+                _currentState = new SpaceState(null) { CanBeIndent = true };
+                _zeroSpaceDedentGenerated = true;
                 break;
+                // }
+                //
+                // _zeroSpaceDedentGenerated = false;
             }
 
             var transition = _currentState.NextState(c);
-            Console.WriteLine($"'{Regex.Escape(c.ToString())}': {transition}");
+            // Console.WriteLine($"'{Regex.Escape(c.ToString())}': {transition}");
             var consume = transition.Flag.HasFlag(StateTransitionFlag.ConsumeChar);
 
             if (transition.Flag.HasFlag(StateTransitionFlag.Accept))

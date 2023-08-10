@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using QParser.Parser.LR;
 
 namespace QParser.Parser;
@@ -9,7 +10,7 @@ public abstract class Nonterminal
     public readonly HashSet<int> Follow = new();
     public readonly HashSet<Nonterminal> FollowGenerator = new();
     protected readonly Grammar Grammar;
-    public readonly HashSet<ClosureItem> NonKernelItems = new();
+    public readonly ClosureItemSet NonKernelItems = new();
     public bool CanBeEmpty;
     public bool CanBeEmptyGenerated;
     protected bool FirstGeneratorGenerated;

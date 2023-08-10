@@ -1,11 +1,20 @@
+using System.Collections.Generic;
 using System.Text;
 using QParser.Lexer;
 
 namespace QParser.Parser.LR;
 
-public record ClosureItem(Rule Rule, CompositeNonterminal Production, int Index,
-    int Lookahead = TokenConstants.Unknown)
+public class ClosureItem
 {
+    public ClosureItem(Rule rule, CompositeNonterminal production, int index,
+        int lookahead = TokenConstants.Unknown)
+    {
+        Rule = rule;
+        Production = production;
+        Index = index;
+        Lookahead = lookahead;
+    }
+
     public Nonterminal? AfterDot => Index >= Production.Components.Length ? null : Production.Components[Index];
     public Nonterminal? BeforeDot => Index == 0 ? null : Production.Components[Index - 1];
 
@@ -13,6 +22,13 @@ public record ClosureItem(Rule Rule, CompositeNonterminal Production, int Index,
 
     public static IEqualityComparer<ClosureItem> LookaheadIrrelevantComparer { get; } =
         new LookaheadIrrelevantEqualityComparer();
+
+    public static IEqualityComparer<ClosureItem> ClosureItemComparer { get; } = new ClosureItemEqualityComparer();
+
+    public Rule Rule { get; }
+    public CompositeNonterminal Production { get; }
+    public int Index { get; }
+    public int Lookahead { get; }
 
     public HashSet<int> FirstAfterAfterDot()
     {
@@ -58,6 +74,11 @@ public record ClosureItem(Rule Rule, CompositeNonterminal Production, int Index,
         lookahead = Lookahead;
     }
 
+    public override int GetHashCode()
+    {
+        return ClosureItemComparer.GetHashCode(this);
+    }
+
     private sealed class LookaheadIrrelevantEqualityComparer : IEqualityComparer<ClosureItem>
     {
         public bool Equals(ClosureItem x, ClosureItem y)
@@ -71,7 +92,38 @@ public record ClosureItem(Rule Rule, CompositeNonterminal Production, int Index,
 
         public int GetHashCode(ClosureItem obj)
         {
-            return HashCode.Combine(obj.Rule, obj.Production, obj.Index);
+            unchecked
+            {
+                var hashCode = obj.Rule.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.Production.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.Index;
+                return hashCode;
+            }
+        }
+    }
+
+    private sealed class ClosureItemEqualityComparer : IEqualityComparer<ClosureItem>
+    {
+        public bool Equals(ClosureItem x, ClosureItem y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, null)) return false;
+            if (ReferenceEquals(y, null)) return false;
+            if (x.GetType() != y.GetType()) return false;
+            return x.Rule.Equals(y.Rule) && x.Production.Equals(y.Production) && x.Index == y.Index &&
+                   x.Lookahead == y.Lookahead;
+        }
+
+        public int GetHashCode(ClosureItem obj)
+        {
+            unchecked
+            {
+                var hashCode = obj.Rule.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.Production.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.Index;
+                hashCode = (hashCode * 397) ^ obj.Lookahead;
+                return hashCode;
+            }
         }
     }
 }

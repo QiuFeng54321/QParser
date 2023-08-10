@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace QParser.Parser;
 
 public abstract class RoundGenerator<TElement>

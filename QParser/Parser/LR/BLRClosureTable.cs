@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using QParser.Lexer;
 
 namespace QParser.Parser.LR;
@@ -110,11 +113,11 @@ public class BLRClosureTable : ClosureTable
                 continue;
             }
 
-            var newItem = item with { Index = item.Index + 1 };
+            var newItem = new ClosureItem(item.Rule, item.Production, item.Index + 1, item.Lookahead);
             itemsToAdd.TryAdd(item.AfterDot, (new ClosureItemSet(), new LookaheadIrrelevantClosureItemSet()));
 
             itemsToAdd[item.AfterDot].Primary.Add(newItem);
-            itemsToAdd[item.AfterDot].Secondary.Add(newItem with { Lookahead = TokenConstants.Unknown });
+            itemsToAdd[item.AfterDot].Secondary.Add(new ClosureItem(newItem.Rule, newItem.Production, newItem.Index));
         }
 
         foreach (var (nonterminal, (primeItems, secondaryItems)) in itemsToAdd)

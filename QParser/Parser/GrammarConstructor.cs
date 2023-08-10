@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using QParser.Lexer;
 
 namespace QParser.Parser;
@@ -29,7 +31,7 @@ public abstract class GrammarConstructor
 
     protected Rule R(string name, bool generated, params CompositeNonterminal[] components)
     {
-        var rule = new Rule(Grammar, name, components.ToHashSet(), generated);
+        var rule = new Rule(Grammar, name, new HashSet<CompositeNonterminal>(components), generated);
         Grammar.AddRule(rule);
         return rule;
     }

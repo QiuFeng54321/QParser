@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using QParser.Lexer;
 
 namespace QParser.Parser;
@@ -23,7 +26,7 @@ public class CompositeNonterminal : Nonterminal
     ///     This composite non-terminal contains only one token
     /// </summary>
 
-    public bool IsSingleToken => Components is [TokenTerminal];
+    public bool IsSingleToken => Components.Length == 1 && Components[0] is TokenTerminal;
 
     /// <summary>
     ///     If this composite non-terminal contains only one token, returns the only token
@@ -34,7 +37,7 @@ public class CompositeNonterminal : Nonterminal
     /// <summary>
     ///     This composite non-terminal contains only one rule
     /// </summary>
-    public bool IsSingleRule => Components is [Rule];
+    public bool IsSingleRule => Components.Length == 1 && Components[0] is Rule;
 
     public static CompositeNonterminal operator +(CompositeNonterminal subRule1, CompositeNonterminal subRule2)
     {

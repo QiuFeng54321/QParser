@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using QParser.Lexer;
 
 namespace QParser.Parser.LR;
@@ -35,7 +38,7 @@ public class LR1ClosureTable : ClosureTable
                 continue;
             }
 
-            var newItem = item with { Index = item.Index + 1 };
+            var newItem = new ClosureItem(item.Rule, item.Production, item.Index + 1, item.Lookahead);
             itemsToAdd.TryAdd(item.AfterDot, new ClosureItemSet());
 
             itemsToAdd[item.AfterDot].Add(newItem);
