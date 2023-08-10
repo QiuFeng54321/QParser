@@ -18,7 +18,19 @@ public class Closure
     {
         Id = id;
         Kernels = kernels;
+        ExpandKernels();
+    }
+
+    private void ExpandKernels()
+    {
         foreach (var kernel in Kernels) Expand(kernel);
+        NonKernels.ExceptWith(Kernels);
+    }
+
+    public void ExpandKernels(ClosureItemSet closureItemSet)
+    {
+        Kernels.UnionWith(closureItemSet);
+        foreach (var kernel in closureItemSet) Expand(kernel);
         NonKernels.ExceptWith(Kernels);
     }
 

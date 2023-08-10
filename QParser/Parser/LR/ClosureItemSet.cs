@@ -14,4 +14,11 @@ public class ClosureItemSet : HashSet<ClosureItem>
     //     existingItem.Lookahead.UnionWith(item.Lookahead);
     //     return true;
     // }
+    public ClosureItemSet()
+    {
+    }
+
+    public ClosureItemSet(IEnumerable<ClosureItem> collection) : base(collection)
+    {
+    }
 }

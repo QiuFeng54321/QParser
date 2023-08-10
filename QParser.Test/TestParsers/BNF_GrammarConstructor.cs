@@ -19,7 +19,7 @@ public class BNF_GrammarConstructor : GrammarConstructor
         var stmt = R("Statement")
             .Add(rule, T(DefaultTokenType.Equal), composites, T(DefaultTokenType.Semicolon))
             .Add(token, T(DefaultTokenType.Equal), T(DefaultTokenType.Integer), T(DefaultTokenType.Semicolon));
-        var stmts = OneOrMany("Statements", stmt);
+        var stmts = ZeroOrMore("Statements", stmt);
         SetEntry(stmts);
     }
 }
