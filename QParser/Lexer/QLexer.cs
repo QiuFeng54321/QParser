@@ -8,6 +8,7 @@ namespace QParser.Lexer;
 
 public class QLexer : IEnumerable<Token>
 {
+    public static readonly Token Eof = new(TokenConstants.Eof, "$");
     private readonly Stack<int> _indentStack = new();
 
     private readonly Dictionary<string, DefaultTokenType> _plainSymbols = new()
@@ -133,7 +134,6 @@ public class QLexer : IEnumerable<Token>
         return _lookaheadChar;
     }
 
-
     /// <summary>
     ///     Reads the next token. If the stream is at its end, returns <see cref="TokenConstants.Eof" />
     /// </summary>
@@ -141,7 +141,7 @@ public class QLexer : IEnumerable<Token>
     /// <exception cref="FormatException">The token processor cannot identify this token</exception>
     public Token NextToken()
     {
-        if (NextCharIsEof) return new Token(TokenConstants.Eof, "$");
+        if (NextCharIsEof) return Eof;
         _currentState = _rootState;
         _stringBuilder.Clear();
         var accept = false;
@@ -205,6 +205,7 @@ public class QLexer : IEnumerable<Token>
         }
 
         var str = _stringBuilder.ToString();
+        if (_currentState is RootState && NextCharIsEof) return Eof;
         var token = _currentState.Accept(str);
         token.SourceRange.Start = startPos;
         token.SourceRange.End = lastPos;

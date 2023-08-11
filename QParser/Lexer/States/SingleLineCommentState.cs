@@ -8,13 +8,13 @@ public class SingleLineCommentState : State
 
     public override StateTransition NextState(char c)
     {
-        if (c != '\n') return new StateTransition(this, StateTransitionFlag.ConsumeChar);
-        return StateTransition.Accept;
+        if (c != '\n' && c != '\0') return new StateTransition(this, StateTransitionFlag.ConsumeChar);
+        return new StateTransition(null, StateTransitionFlag.Accept | StateTransitionFlag.Ignore);
     }
 
     public override Token Accept(string str)
     {
-        return new Token(DefaultTokenType.Comment.ToInt(), str) { Ignore = true };
+        return new Token(DefaultTokenType.Comment.ToInt(), str);
     }
 
     public override StateTransition MakeTransitionToThis()

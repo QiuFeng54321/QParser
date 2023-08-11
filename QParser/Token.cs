@@ -10,6 +10,7 @@ public class Token
     public bool Ignore;
     public int TokenType;
 
+
     public Token(int tokenType, string content)
     {
         TokenType = tokenType;

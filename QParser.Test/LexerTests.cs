@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Text;
 using QParser.Lexer;
-using QParser.Lexer.Tokens;
 
 namespace QParser.Test;
 
@@ -111,6 +110,42 @@ public class LexerTestsFixtureData
                 DefaultTokenType.LessThan,
                 DefaultTokenType.Identifier,
                 DefaultTokenType.GreaterThan
+            });
+            yield return new TestFixtureData("String", new[]
+            {
+                """
+                "abc  \"ii\\\\oj"
+                """,
+                """
+                "\"\""
+                """,
+                "a",
+                """
+                ""
+                """
+            }, new[]
+            {
+                DefaultTokenType.String,
+                DefaultTokenType.String,
+                DefaultTokenType.Identifier,
+                DefaultTokenType.String
+            });
+            yield return new TestFixtureData("Comments", new[]
+            {
+                "abc",
+                "// aoidafo hi3 r9009f 0adj'''ds''\"\"D",
+                "\n",
+                "   ",
+                "dsaioeff",
+                "// dassd"
+            }, new[]
+            {
+                DefaultTokenType.Identifier,
+                DefaultTokenType.Comment,
+                DefaultTokenType.Space,
+                DefaultTokenType.Indent,
+                DefaultTokenType.Identifier,
+                DefaultTokenType.Comment
             });
         }
     }
