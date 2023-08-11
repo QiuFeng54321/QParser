@@ -67,7 +67,7 @@ public class ParserFeatureGenerationTests
     public void GenerateNonKernelItems()
     {
         _grammar.GenerateNonKernelItems();
-        foreach (var rule in _grammar.Rules)
+        foreach (var (name, rule) in _grammar.Rules)
         {
             Console.WriteLine($"Non-kernel item for {rule}: ");
             foreach (var nonKernelItem in rule.NonKernelItems) Console.WriteLine(nonKernelItem);

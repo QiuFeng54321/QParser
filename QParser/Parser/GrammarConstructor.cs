@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using QParser.Lexer;
 
 namespace QParser.Parser;
 
@@ -32,19 +31,17 @@ public abstract class GrammarConstructor
     protected Rule R(string name, bool generated, params CompositeNonterminal[] components)
     {
         var rule = new Rule(Grammar, name, new HashSet<CompositeNonterminal>(components), generated);
-        Grammar.AddRule(rule);
-        return rule;
+        return Grammar.AddOrMergeRule(rule);
     }
 
-    protected Rule R(string name, params CompositeNonterminal[] components)
+    public Rule R(string name, params CompositeNonterminal[] components)
     {
         return R(name, false, components);
     }
 
-    protected void SetEntry(Rule rule)
+    public void SetEntry(Rule rule)
     {
         Grammar.EntryRule = R("$ENTRY", C(rule, T(TokenConstants.Eof)));
-        Grammar.AddRule(Grammar.EntryRule);
     }
 
     private Rule MakeTempRule()
@@ -52,28 +49,29 @@ public abstract class GrammarConstructor
         return R(TempRuleName, true);
     }
 
-    protected Rule OneOrMany(string name, params Nonterminal[] components)
+    public Rule OneOrMany(string name, params Nonterminal[] components)
     {
         if (components.Length == 0) throw new FormatException("Length of components must be at least one!");
         var ruleGroup = components.Length > 1 ? MakeTempRule().Add(components) : components[0];
+        if (ruleGroup is OneOrManyRule alreadyOneOrManyRule) return alreadyOneOrManyRule;
+        if (ruleGroup is Rule someRule && someRule.SubRules.Contains(Epsilon)) return ZeroOrMore(name, components);
         var macroRule = new OneOrManyRule(Grammar, name, new HashSet<CompositeNonterminal>(), true);
-        Grammar.AddRule(macroRule);
         macroRule.Add(ruleGroup).Add(macroRule, ruleGroup);
-        return macroRule;
+        return Grammar.AddOrMergeRule(macroRule);
     }
 
-    protected Rule ZeroOrMore(string name, params Nonterminal[] components)
+    public Rule ZeroOrMore(string name, params Nonterminal[] components)
     {
         if (components.Length == 0) throw new FormatException("Length of components must be at least one!");
         var ruleGroup = components.Length > 1 ? MakeTempRule().Add(components) : components[0];
+        if (ruleGroup is ZeroOrMoreRule alreadyZeroOrMoreRule) return alreadyZeroOrMoreRule;
         var macroRule = new ZeroOrMoreRule(Grammar, name, new HashSet<CompositeNonterminal>(), true);
-        Grammar.AddRule(macroRule);
         macroRule.Add(macroRule, ruleGroup);
         macroRule.Add(Epsilon);
-        return macroRule;
+        return Grammar.AddOrMergeRule(macroRule);
     }
 
-    protected Rule Optional(string name, params Nonterminal[] components)
+    public Rule Optional(string name, params Nonterminal[] components)
     {
         var ruleGroup = new Rule(Grammar, name, new HashSet<CompositeNonterminal>(), true);
         ruleGroup.Add(components).Add(Epsilon);

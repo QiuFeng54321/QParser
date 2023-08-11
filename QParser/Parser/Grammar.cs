@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FluentResults;
-using QParser.Lexer;
 using QParser.Parser.LL;
 
 namespace QParser.Parser;
@@ -11,7 +10,7 @@ public class Grammar
 {
     public readonly CompositeNonterminal Epsilon, Eof;
     public readonly LL1ParseTable LL1ParseTable = new();
-    public readonly HashSet<Rule> Rules = new();
+    public readonly Dictionary<string, Rule> Rules = new();
     public bool CanBeEmptyGenerated;
     public bool FirstGenerated;
     public bool FollowGenerated;
@@ -25,9 +24,15 @@ public class Grammar
 
     public Rule? EntryRule { set; get; }
 
-    public void AddRule(Rule rule)
+    public Rule AddOrMergeRule(Rule rule)
     {
-        Rules.Add(rule);
+        if (!Rules.TryAdd(rule.Name, rule))
+        {
+            Rules[rule.Name].SubRules.UnionWith(rule.SubRules);
+            return Rules[rule.Name];
+        }
+
+        return rule;
     }
 
     public void GenerateCanBeEmpty()
@@ -37,7 +42,7 @@ public class Grammar
         while (changed)
         {
             changed = false;
-            foreach (var rule in Rules) changed |= rule.GenerateCanBeEmpty();
+            foreach (var (name, rule) in Rules) changed |= rule.GenerateCanBeEmpty();
         }
 
         CanBeEmptyGenerated = true;
@@ -48,12 +53,12 @@ public class Grammar
         if (FirstGenerated) return;
         GenerateCanBeEmpty();
         var changed = true;
-        foreach (var rule in Rules) rule.GenerateFirstGenerator();
+        foreach (var (name, rule) in Rules) rule.GenerateFirstGenerator();
 
         while (changed)
         {
             changed = false;
-            foreach (var rule in Rules)
+            foreach (var (name, rule) in Rules)
             {
                 foreach (var subRule in rule.FirstGenerator) changed |= subRule.RoundGenerateFirst();
 
@@ -67,7 +72,7 @@ public class Grammar
     private void GenerateFollowGenerator()
     {
         // Traverse every sub-rule
-        foreach (var rule in Rules)
+        foreach (var (name, rule) in Rules)
         foreach (var subRule in rule.SubRules)
         {
             // Iterate backwards so that FIRST set can be generated more efficiently
@@ -106,7 +111,7 @@ public class Grammar
         while (changed)
         {
             changed = false;
-            foreach (var rule in Rules)
+            foreach (var (name, rule) in Rules)
             {
                 foreach (var subRule in rule.FollowGenerator) changed |= subRule.RoundGenerateFollow();
 
@@ -125,7 +130,7 @@ public class Grammar
         do
         {
             changed = false;
-            foreach (var rule in Rules)
+            foreach (var (name, rule) in Rules)
             {
                 changed |= rule.GenerateNonKernelItems();
                 foreach (var subRule in rule.SubRules)
@@ -138,7 +143,7 @@ public class Grammar
 
     public Result CanBeLL1()
     {
-        foreach (var rule in Rules)
+        foreach (var (name, rule) in Rules)
         {
             if (rule.SubRules.Count == 0) return Result.Fail($"Empty rule: {rule}"); // ???
             HashSet<int> overlappingFirst = new();
@@ -186,7 +191,7 @@ public class Grammar
     public string ToString(bool withFirst, bool withFollow)
     {
         var sb = new StringBuilder();
-        foreach (var rule in Rules) rule.Format(sb, withFirst, withFollow);
+        foreach (var (name, rule) in Rules) rule.Format(sb, withFirst, withFollow);
 
         return sb.ToString();
     }

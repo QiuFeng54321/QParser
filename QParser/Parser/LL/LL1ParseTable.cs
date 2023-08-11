@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using FluentResults;
-using QParser.Lexer;
 
 namespace QParser.Parser.LL;
 
@@ -63,7 +62,7 @@ public class LL1ParseTable : IEnumerable<(Rule rule, int tokenType, CompositeNon
     public Result GenerateFromGrammar(Grammar grammar)
     {
         var result = Result.Ok();
-        foreach (var rule in grammar.Rules)
+        foreach (var (name, rule) in grammar.Rules)
         foreach (var subRule in rule.SubRules)
         {
             foreach (var first in subRule.First)

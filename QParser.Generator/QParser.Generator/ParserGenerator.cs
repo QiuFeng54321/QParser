@@ -36,7 +36,7 @@ public class ParserGenerator : IIncrementalGenerator
                     productionContext.ReportDiagnostic(
                         Diagnostic.Create(
                             new DiagnosticDescriptor("QE002", "Syntax Error", exception.ToString(), "Metagrammar",
-                                DiagnosticSeverity.Info, true),
+                                DiagnosticSeverity.Warning, true),
                             Location.Create(fileInformation.FilePath,
                                 new TextSpan(exception.SourceRange.Start.Column, 1),
                                 exception.SourceRange.ToLinePositionSpan())));
