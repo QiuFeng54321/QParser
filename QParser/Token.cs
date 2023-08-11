@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
+using QParser.Lexer;
 
-namespace QParser.Lexer.Tokens;
+namespace QParser;
 
 public class Token
 {

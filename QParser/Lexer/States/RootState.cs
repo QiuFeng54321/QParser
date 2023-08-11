@@ -1,5 +1,4 @@
 using System;
-using QParser.Lexer.Tokens;
 
 namespace QParser.Lexer.States;
 
@@ -16,6 +15,7 @@ public class RootState : State
     {
         if (c == '\0') return StateTransition.Accept;
         if (SpaceState.CheckAll(c)) return SpaceState.Identity.MakeTransitionToThis();
+        if (c == '"') return new StringState(this).MakeTransitionToThis();
         // if (IntegerState.Check(c)) return new IntegerState(this).MakeTransitionToThis();
         return RootTrieState.MakeTransitionToThis();
     }

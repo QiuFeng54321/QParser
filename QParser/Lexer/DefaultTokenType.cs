@@ -43,5 +43,7 @@ public enum DefaultTokenType
     CloseBrace,
     Space,
     Semicolon,
-    QuestionMark
+    QuestionMark,
+    String,
+    Comment
 }
