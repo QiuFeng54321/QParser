@@ -4,10 +4,11 @@
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>QParser.Generator.Sample</RootNamespace>
+        <OutputType>Exe</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\QParser\QParser.csproj"/>
+        <ProjectReference Include="..\..\QParser\QParser.csproj" OutputItemType="Analyzer"/>
         <ProjectReference Include="..\QParser.Generator\QParser.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 

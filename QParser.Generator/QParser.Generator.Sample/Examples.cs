@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Entities;
 
@@ -21,6 +22,7 @@ public class Examples
     // Execute generated method Report
     public IEnumerable<string> CreateEntityReport(SampleEntity entity)
     {
+        Console.WriteLine(new Atest().Get());
         return entity.Report();
     }
 }

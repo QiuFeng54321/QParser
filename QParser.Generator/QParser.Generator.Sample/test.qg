@@ -1,7 +1,7 @@
+<T> = <S>+;
 <S> = <S> PLUS <E>
     | <S> MULT <E>
-    | <E>
-    ;
+    | <E>;
 <E> = INTEGER
     | OPAREN <S> CPAREN
     ;
