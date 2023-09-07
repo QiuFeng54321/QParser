@@ -3,4 +3,5 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=LL/@EntryIndexedValue">LL</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=LR/@EntryIndexedValue">LR</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=SLR/@EntryIndexedValue">SLR</s:String>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=Nonterminal/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Nonterminal/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Nonterminals/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

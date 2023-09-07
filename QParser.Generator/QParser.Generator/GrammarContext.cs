@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using QParser.Generator.ParserAst;
 using QParser.Lexer;
 using QParser.Parser;
 
@@ -56,16 +57,13 @@ public class GrammarContext
                     case "Rule":
                     {
                         var ruleNameToken = ((TokenParseTreeNode)ruleParseTreeNode.Nodes[1]).Token;
-                        parseTreeNode.Data = GrammarConstructor.R(ruleNameToken.Content);
+                        parseTreeNode.Data = new ParserRule(this, ruleNameToken);
                         break;
                     }
                     case "Token":
                     {
                         var tokenNameToken = ((TokenParseTreeNode)ruleParseTreeNode.Nodes[0]).Token;
-                        if (!Tokens.TryGetValue(tokenNameToken.Content, out var tokenType))
-                            throw new NotImplementedException();
-
-                        parseTreeNode.Data = GrammarConstructor.T(tokenType);
+                        parseTreeNode.Data = new ParserToken(this, tokenNameToken);
                         break;
                     }
                     case "Statement":
@@ -76,24 +74,23 @@ public class GrammarContext
                             {
                                 var macroKey = ((TokenParseTreeNode)ruleParseTreeNode.Nodes[1]).Token;
                                 var content = ((TokenParseTreeNode)ruleParseTreeNode.Nodes[3]).Token;
-                                if (macroKey.Content == "Tokens") FillTokens(content);
-
+                                parseTreeNode.Data = new ParserMacro(this, macroKey, content);
                                 break;
                             }
                             case Rule { Name: "Rule" }:
                             {
-                                var macroKey = ruleParseTreeNode.Nodes[0].Data as Rule ??
+                                var macroKey = ruleParseTreeNode.Nodes[0].Data as ParserRule ??
                                                throw new InvalidOperationException();
-                                var content = ruleParseTreeNode.Nodes[2].Data as HashSet<CompositeNonterminal> ??
+                                var content = ruleParseTreeNode.Nodes[2].Data as List<ParserCompositeRule> ??
                                               throw new InvalidOperationException();
-                                parseTreeNode.Data = GrammarConstructor.R(macroKey.Name, false, content);
+                                parseTreeNode.Data = new ParserRuleDeclaration(this, content, macroKey);
                                 break;
                             }
                             case TokenTerminal { TokenType: (int)DefaultTokenType.Identifier }:
                             {
                                 var tokenName = ((TokenParseTreeNode)ruleParseTreeNode.Nodes[0]).Token;
                                 var id = ((TokenParseTreeNode)ruleParseTreeNode.Nodes[2]).Token;
-                                Tokens.TryAdd(tokenName.Content, int.Parse(id.Content));
+                                parseTreeNode.Data = new ParserTokenDeclaration(this, tokenName, id);
                                 break;
                             }
                         }
@@ -102,7 +99,7 @@ public class GrammarContext
                     }
                     case "Symbol":
                     {
-                        var core = (Nonterminal)(parseTreeNode.Nodes[0].Data ?? throw new InvalidOperationException());
+                        var core = (ParserSymbol)(parseTreeNode.Nodes[0].Data ?? throw new InvalidOperationException());
                         if (ruleParseTreeNode.Nodes.Count == 1)
                         {
                             parseTreeNode.Data = core;
@@ -113,20 +110,17 @@ public class GrammarContext
                         {
                             case (int)DefaultTokenType.Plus:
                             {
-                                parseTreeNode.Data =
-                                    GrammarConstructor.OneOrMany(GrammarConstructor.TempRuleName, core);
+                                parseTreeNode.Data = new ParserOneOrMany(this, core);
                                 break;
                             }
                             case (int)DefaultTokenType.Multiply:
                             {
-                                parseTreeNode.Data =
-                                    GrammarConstructor.ZeroOrMore(GrammarConstructor.TempRuleName, core);
+                                parseTreeNode.Data = new ParserZeroOrMore(this, core);
                                 break;
                             }
                             case (int)DefaultTokenType.QuestionMark:
                             {
-                                parseTreeNode.Data =
-                                    GrammarConstructor.Optional(GrammarConstructor.TempRuleName, core);
+                                parseTreeNode.Data = new ParserOptional(this, core);
                                 break;
                             }
                         }
@@ -135,18 +129,18 @@ public class GrammarContext
                     }
                     case "Composite":
                     {
-                        parseTreeNode.Data =
-                            GrammarConstructor.C(parseTreeNode.Nodes.Select(n => (Nonterminal)n.Data).ToArray());
+                        parseTreeNode.Data = new ParserCompositeRule(this,
+                            parseTreeNode.Nodes.Select(n => (ParserSymbol)n.Data).ToList());
                         break;
                     }
                     case "Composites":
                     {
-                        HashSet<CompositeNonterminal> composites = new()
+                        List<ParserCompositeRule> composites = new()
                         {
-                            parseTreeNode.Nodes[0].Data as CompositeNonterminal ?? throw new InvalidOperationException()
+                            parseTreeNode.Nodes[0].Data as ParserCompositeRule ?? throw new InvalidOperationException()
                         };
                         foreach (var trailingNode in parseTreeNode.Nodes[1].Nodes)
-                            composites.Add(trailingNode.Nodes[1].Data as CompositeNonterminal ??
+                            composites.Add(trailingNode.Nodes[1].Data as ParserCompositeRule ??
                                            throw new InvalidOperationException());
 
                         parseTreeNode.Data = composites;
