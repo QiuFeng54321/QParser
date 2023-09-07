@@ -10,28 +10,33 @@ public abstract class GrammarConstructor
     private int _tempRuleId;
     protected CompositeNonterminal Epsilon => Grammar.Epsilon;
     private int TempRuleId => _tempRuleId++;
-    private string TempRuleName => $"$TMP{TempRuleId}";
+    public string TempRuleName => $"$TMP{TempRuleId}";
     public abstract void Construct();
 
-    protected TokenTerminal T(int tokenType)
+    public TokenTerminal T(int tokenType)
     {
         return new TokenTerminal(Grammar, tokenType);
     }
 
-    protected TokenTerminal T<TToken>(TToken tokenType) where TToken : Enum
+    public TokenTerminal T<TToken>(TToken tokenType) where TToken : Enum
     {
         return T(tokenType.ToInt());
     }
 
-    protected CompositeNonterminal C(params Nonterminal[] components)
+    public CompositeNonterminal C(params Nonterminal[] components)
     {
         return new CompositeNonterminal(Grammar, components);
     }
 
-    protected Rule R(string name, bool generated, params CompositeNonterminal[] components)
+    public Rule R(string name, bool generated, HashSet<CompositeNonterminal> components)
     {
-        var rule = new Rule(Grammar, name, new HashSet<CompositeNonterminal>(components), generated);
+        var rule = new Rule(Grammar, name, components, generated);
         return Grammar.AddOrMergeRule(rule);
+    }
+
+    public Rule R(string name, bool generated, params CompositeNonterminal[] components)
+    {
+        return R(name, generated, new HashSet<CompositeNonterminal>(components));
     }
 
     public Rule R(string name, params CompositeNonterminal[] components)

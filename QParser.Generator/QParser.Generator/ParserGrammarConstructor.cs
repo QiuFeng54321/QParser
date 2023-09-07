@@ -35,9 +35,11 @@ public class ParserGrammarConstructor : GrammarConstructor
         var composites = R("Composites")
             .Add(composite, ZeroOrMore("TrailingComposites", T(DefaultTokenType.BitOr), composite));
         var stmt = R("Statement")
-            .Add(rule, T(DefaultTokenType.Equal), composites, T(DefaultTokenType.Semicolon))
-            .Add(token, T(DefaultTokenType.Equal), T(DefaultTokenType.Integer), T(DefaultTokenType.Semicolon));
-        var stmts = ZeroOrMore("Statements", stmt);
+            .Add(rule, T(DefaultTokenType.Colon), composites)
+            .Add(T(DefaultTokenType.Identifier), T(DefaultTokenType.Equal), T(DefaultTokenType.Integer))
+            .Add(T(DefaultTokenType.QuestionMark), T(DefaultTokenType.Identifier), T(DefaultTokenType.Equal),
+                T(DefaultTokenType.String));
+        var stmts = ZeroOrMore("Statements", stmt, T(DefaultTokenType.Semicolon));
         SetEntry(stmts);
     }
 }

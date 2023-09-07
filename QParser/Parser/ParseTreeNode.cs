@@ -6,6 +6,7 @@ namespace QParser.Parser;
 public abstract class ParseTreeNode
 {
     public readonly List<ParseTreeNode> Nodes;
+    public object? Data;
 
     protected ParseTreeNode(List<ParseTreeNode> nodes)
     {

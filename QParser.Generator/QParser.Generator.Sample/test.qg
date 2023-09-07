@@ -1,7 +1,8 @@
-<T> = <S>+;
-<S> = <S> PLUS <E>
-    | <S> MULT <E>
+?Tokens = "QParser.Lexer.DefaultTokenType";
+<T> : <S>+;
+<S> : <S> Plus <E>
+    | <S> Multiply <E>
     | <E>;
-<E> = INTEGER
-    | OPAREN <S> CPAREN
+<E> : Integer
+    | OpenParen <S> CloseParen
     ;

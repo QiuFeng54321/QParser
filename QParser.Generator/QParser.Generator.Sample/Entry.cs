@@ -8,6 +8,7 @@ internal class Entry
     {
         Console.WriteLine("This is entry");
         Console.WriteLine(new Atest().Get());
+        Console.WriteLine(Atest.Grammar);
         Console.WriteLine("Ends here");
     }
 }
