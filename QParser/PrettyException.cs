@@ -24,8 +24,9 @@ public class PrettyException
             .Append(GetType().Name)
             .Append(": ")
             .Append(Message)
-            .AppendLine(":");
-        const int maxLineBefore = 3;
+            .AppendLine(":")
+            .AppendLine("...");
+        const int maxLineBefore = 2;
         var linesBefore = Math.Min(SourceRange.Start.Line, maxLineBefore);
         for (var i = 0; i < linesBefore; i++)
             sb.AppendLine(FileInformation.Lines[SourceRange.Start.Line - linesBefore + i]);
@@ -40,7 +41,7 @@ public class PrettyException
                 : 0;
             var tildeCount = FileInformation.Lines[line].Length - spacesBefore - spacesAfter;
             sb.Append(new string(' ', spacesBefore));
-            sb.Append(new string('~', tildeCount));
+            sb.Append(new string('^', tildeCount));
             sb.AppendLine(new string(' ', spacesAfter));
         }
 

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using QParser.Lexer;
 using QParser.Parser;
@@ -20,14 +23,24 @@ public class ParserGenerator : IIncrementalGenerator
         metaGrammarConstructor.Construct();
         var metaGrammar = metaGrammarConstructor.Grammar;
         metaGrammar.GenerateAll();
-        Console.WriteLine(metaGrammar);
+        // Console.WriteLine(metaGrammar);
         var metaGrammarParser = new CanonicalLRParser(metaGrammar, metaGrammarFileInformation);
         metaGrammarParser.Generate();
-        metaGrammarParser.DumpTables();
+        // metaGrammarParser.DumpTables();
+        var enums = context.SyntaxProvider.CreateSyntaxProvider(static (n, _) => n is EnumDeclarationSyntax,
+                static (n, _) =>
+                {
+                    // Load every enum declaration 
+                    var enumDeclarationSymbol = (ITypeSymbol)n.SemanticModel.GetDeclaredSymbol(n.Node);
+                    return (enumDeclarationSymbol.Name, enumDeclarationSymbol.GetEnumsFromSyntax());
+                }).Collect()
+            .Select(static (x, _) => x.ToDictionary(tuple => tuple.Name, tuple => tuple.Item2));
         var grammarFiles = context.AdditionalTextsProvider.Where(static f => f.Path.EndsWith(".qg"));
-        var output = grammarFiles.Select((additionalText, token) =>
-            GenerateParseTreeFor(additionalText, token, metaGrammarParser));
-
+        var output = grammarFiles.Combine(enums).Select((tuple, token) =>
+        {
+            var (additionalText, enums) = tuple;
+            return GenerateParseTreeFor(additionalText, token, metaGrammarParser, enums);
+        });
         context.RegisterSourceOutput(output, (productionContext, tuple) =>
         {
             var (name, parseTree, fileInformation, grammar) = tuple;
@@ -57,13 +70,9 @@ public class ParserGenerator : IIncrementalGenerator
         });
     }
 
-    public void Execute(GeneratorExecutionContext context)
-    {
-    }
-
     private static (string Name, ParseTreeNode? Tree, FileInformation fileInformation, Grammar? grammar)
-        GenerateParseTreeFor(
-            AdditionalText grammarFile, CancellationToken cancellationToken, Parser.QParser metaGrammarParser)
+        GenerateParseTreeFor(AdditionalText grammarFile, CancellationToken cancellationToken,
+            Parser.QParser metaGrammarParser, Dictionary<string, Dictionary<string, int>> enumDictionary)
     {
         var fileName = Path.GetFileNameWithoutExtension(grammarFile.Path);
         var fileInfo = new FileInformation(grammarFile.Path);
@@ -87,9 +96,11 @@ public class ParserGenerator : IIncrementalGenerator
         var parseTree = metaGrammarParser.GetParseTree();
         Console.WriteLine(parseTree);
         metaGrammarParser.Reset();
-        var grammarContext = new GrammarContext(fileInfo);
+        var grammarContext = new GrammarContext(fileInfo, enumDictionary);
         grammarContext.Traverse(parseTree);
+        grammarContext.FileInformation.DumpExceptions();
         grammarContext.GrammarConstructor.Grammar.GenerateAll();
+        Console.WriteLine("Complete");
         return (fileName, parseTree, fileInfo, grammarContext.GrammarConstructor.Grammar);
     }
 }

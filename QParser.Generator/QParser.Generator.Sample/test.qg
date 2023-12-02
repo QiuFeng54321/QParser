@@ -1,4 +1,4 @@
-?Tokens = "QParser.Lexer.DefaultTokenType";
+?Tokens = "TestTokenTypes";
 <T> : <S>+;
 <S> : <S> Plus <E>
     | <S> Multiply <E>

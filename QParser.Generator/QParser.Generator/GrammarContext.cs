@@ -13,32 +13,41 @@ public class GrammarContext
     public readonly PublicGrammarConstructor GrammarConstructor = new();
     public readonly Dictionary<string, int> Tokens = new();
 
-    public GrammarContext(FileInformation fileInformation)
+    public GrammarContext(FileInformation fileInformation, Dictionary<string, Dictionary<string, int>> enumDictionary)
     {
         FileInformation = fileInformation;
+        EnumDictionary = enumDictionary;
     }
+
+    public Dictionary<string, Dictionary<string, int>> EnumDictionary { get; set; }
 
     public void FillTokens(Token typeNameToken)
     {
         var typeName = typeNameToken.Content.StringExprToString();
-        var type = typeName.FindType();
-        if (type is null)
+        if (!EnumDictionary.TryGetValue(typeName, out var enumValues))
         {
-            new PrettyException(FileInformation, typeNameToken.SourceRange, $"Unknown type: {typeName}")
-                .AddToExceptions();
-            return;
+            var type = typeName.FindType();
+            if (type is null)
+            {
+                new PrettyException(FileInformation, typeNameToken.SourceRange, $"Unknown type: {typeName}")
+                    .AddToExceptions();
+                return;
+            }
+
+            if (!type.IsEnum || type.GetEnumUnderlyingType() != typeof(int))
+            {
+                new PrettyException(FileInformation, typeNameToken.SourceRange,
+                        $"{typeName} is not an integer enum type")
+                    .AddToExceptions();
+                return;
+            }
+
+            enumValues = type.GetEnumsFromType();
+            EnumDictionary.Add(typeName, enumValues);
         }
 
-        if (!type.IsEnum && type.GetEnumUnderlyingType() != typeof(int))
+        foreach (var (tokenName, tokenValue) in enumValues)
         {
-            new PrettyException(FileInformation, typeNameToken.SourceRange, $"{typeName} is not an integer enum type")
-                .AddToExceptions();
-            return;
-        }
-
-        foreach (var tokenName in type.GetEnumNames())
-        {
-            var tokenValue = (int)Enum.Parse(type, tokenName);
             Tokens[tokenName] = tokenValue;
         }
     }
@@ -70,6 +79,7 @@ public class GrammarContext
                     {
                         switch (ruleParseTreeNode.Production.Components[0])
                         {
+                            // Macro
                             case TokenTerminal { TokenType: (int)DefaultTokenType.QuestionMark }:
                             {
                                 var macroKey = ((TokenParseTreeNode)ruleParseTreeNode.Nodes[1]).Token;
